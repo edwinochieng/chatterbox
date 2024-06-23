@@ -34,9 +34,11 @@ export default function SignUpPage() {
         email,
         password,
       });
+
       if (result!.error) {
         toast.error(result!.error);
       } else {
+        toast.success("Registration successful");
         router.push("/chats");
       }
     } catch (err) {

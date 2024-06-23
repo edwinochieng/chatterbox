@@ -6,6 +6,7 @@ const saltRounds = 10;
 export async function POST(req: Request) {
   try {
     const { name, email, password } = await req.json();
+    console.log("User data", name, email);
 
     if (
       !name ||
@@ -17,7 +18,6 @@ export async function POST(req: Request) {
       return Response.json({
         message: "Validation Error",
       });
-      return;
     }
 
     const existingUser = await prisma.user.findUnique({
@@ -28,12 +28,11 @@ export async function POST(req: Request) {
       return Response.json({
         message: "User already exists",
       });
-      return;
     }
 
     const newUser = await prisma.user.create({
       data: {
-        name,
+        fullName: name,
         email,
         password: bcrypt.hashSync(password, saltRounds),
       },
@@ -41,9 +40,7 @@ export async function POST(req: Request) {
 
     return Response.json({
       message: "User created!",
-      id: newUser.id,
-      name: newUser.name,
-      email: newUser.email,
+      newUser,
     });
   } catch (err) {
     return Response.json({ message: "Server error" });
