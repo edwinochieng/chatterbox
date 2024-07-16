@@ -1,13 +1,12 @@
-import React from "react";
 import ChatList from "@/components/ChatList";
+import React from "react";
 
 export default function ChatPage() {
   return (
     <div>
       {/**Desktop */}
       <div className="flex flex-row ">
-        {/**Chat list */}
-        <div className="w-[300px]">
+        <div>
           <ChatList />
         </div>
 

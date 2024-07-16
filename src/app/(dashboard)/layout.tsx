@@ -10,7 +10,7 @@ export default function DashboardLayout({
       <div>
         <Sidebar />
       </div>
-      <div className="flex-1 bg-red-500 ">{children}</div>
+      <div className="flex-1">{children}</div>
     </div>
   );
 }
