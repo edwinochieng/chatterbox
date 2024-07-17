@@ -6,12 +6,10 @@ export default function ChatPage() {
     <div>
       {/**Desktop */}
       <div className="flex flex-row ">
-        <div>
-          <ChatList />
-        </div>
+        <ChatList />
 
         {/**Prompt */}
-        <div className="w-full bg-yellow-200 h-screen"></div>
+        <div className="hidden lg:block w-full bg-gray-200 h-screen"></div>
       </div>
     </div>
   );
