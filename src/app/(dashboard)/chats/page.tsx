@@ -5,7 +5,7 @@ export default function ChatPage() {
   return (
     <div>
       {/**Desktop */}
-      <div className="flex flex-row ">
+      <div className="relative flex flex-row ">
         <ChatList />
 
         {/**Prompt */}

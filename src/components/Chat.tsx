@@ -10,7 +10,7 @@ export default function Chat() {
         <AvatarFallback>CN</AvatarFallback>
       </Avatar>
 
-      <div className="ml-3">
+      <div className="ml-3 flex-1">
         <div className="flex flex-row items-center justify-between">
           <span className="text-gray-800 font-semibold text-base">
             John Doe
@@ -19,8 +19,8 @@ export default function Chat() {
         </div>
 
         <div className="flex flex-row items-center justify-between ">
-          <p className="text-sm text-gray-700 ">
-            This is a dummy text. This is a dummy text, dummy text,dummy text
+          <p className="text-sm text-gray-700 max-w-full">
+            This is a dummy text. This is a dummy text, dummy text, dummy text
           </p>
         </div>
       </div>

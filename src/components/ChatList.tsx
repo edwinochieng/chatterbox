@@ -30,7 +30,7 @@ export default function ChatList() {
     chat.toLowerCase().includes(searchTerm.toLowerCase())
   );
   return (
-    <div className="relative top-0 bottom-0 left-0 h-screen w-full lg:max-w-[280px] xl:max-w-[340px]">
+    <div className="absolute top-0 bottom-0 left-0 h-screen w-full lg:max-w-[280px] xl:max-w-[340px] bg-primary">
       <div className="mt-5 px-6">
         <h1 className="text-3xl font-semibold text-gray-800">Messages</h1>
 
