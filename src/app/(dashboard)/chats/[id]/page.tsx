@@ -1,17 +1,16 @@
 import ChatList from "@/components/ChatList";
 import React from "react";
 
-export default function ChatPage() {
+export default function ChatDetailsPage() {
   return (
     <div>
-      {/**Desktop */}
       <div className="relative flex flex-row ">
-        <div>
+        <div className="">
           <ChatList />
         </div>
 
-        {/**Prompt */}
-        <div className="hidden lg:block w-full bg-gray-200 h-screen"></div>
+        {/**Chat room */}
+        <div className="w-full bg-gray-200 h-screen"></div>
       </div>
     </div>
   );

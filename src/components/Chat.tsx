@@ -1,10 +1,12 @@
 "use client";
 import React from "react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { useRouter } from "next/navigation";
 
 export default function Chat() {
+  const router = useRouter();
   return (
-    <div className="w-full flex flex-row items-center my-3 px-6 py-2 cursor-pointer hover:bg-indigo-50 ">
+    <div className="w-full flex flex-row items-center my-3 px-6 py-2 cursor-pointer hover:bg-indigo-50 " onClick={() => router.push("/chats/123")}>
       <Avatar className="h-[42px] w-[42px]">
         <AvatarImage src="/profile.jpg" />
         <AvatarFallback>CN</AvatarFallback>
@@ -20,7 +22,7 @@ export default function Chat() {
 
         <div className="flex flex-row items-center justify-between ">
           <p className="text-sm text-gray-700 max-w-full">
-            This is a dummy text. This is a dummy text, dummy text, dummy text
+            This is a dummy text. This is a dummy text
           </p>
         </div>
       </div>
