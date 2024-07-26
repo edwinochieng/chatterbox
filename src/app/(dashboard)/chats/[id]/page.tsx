@@ -4,13 +4,15 @@ import React from "react";
 export default function ChatDetailsPage() {
   return (
     <div>
-      <div className="relative flex flex-row ">
-        <div className="">
+      <div className="flex flex-row ">
+        <div className="hidden w-full lg:block lg:max-w-[280px] xl:max-w-[340px]">
           <ChatList />
         </div>
 
         {/**Chat room */}
-        <div className="w-full bg-gray-200 h-screen"></div>
+        <div className="w-full bg-gray-200 h-screen">
+          <h1 className=" text-gray-800">Hello world</h1>
+        </div>
       </div>
     </div>
   );
