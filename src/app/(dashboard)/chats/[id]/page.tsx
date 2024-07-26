@@ -5,7 +5,7 @@ export default function ChatDetailsPage() {
   return (
     <div>
       <div className="flex flex-row ">
-        <div className="hidden w-full lg:block lg:max-w-[280px] xl:max-w-[340px]">
+        <div className="hidden lg:w-full lg:block lg:max-w-[280px] xl:max-w-[340px]">
           <ChatList />
         </div>
 
