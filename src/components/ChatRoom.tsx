@@ -1,12 +1,30 @@
+"use client";
 import React from "react";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { useRouter } from "next/navigation";
 
 export default function ChatRoom() {
+  const router = useRouter();
   return (
     <div>
       <div className="flex flex-col h-screen  ">
         {/* Navbar */}
-        <div className="py-4 bg-primary">
-          <nav className="text-black p-4">Chat Room</nav>
+        <div className="py-4 px-12 bg-primary">
+          <div className="flex flex-row justify-between">
+            <div className="flex items-center space-x-4">
+              <Avatar className="h-[48px] w-[48px]">
+                <AvatarImage src="/profile.jpg" />
+                <AvatarFallback>CN</AvatarFallback>
+              </Avatar>
+              <div className="flex flex-col">
+                <span className="font-semibold text-2xl">John Doe</span>
+                <span className="text-base font-medium text-green-500">
+                  Online
+                </span>
+              </div>
+            </div>
+            <div></div>
+          </div>
         </div>
 
         {/* Chat Messages */}
