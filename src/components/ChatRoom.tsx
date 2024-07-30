@@ -85,7 +85,7 @@ export default function ChatRoom() {
         </div>
 
         {/* Chat Messages */}
-        <div className="flex-1 overflow-y-auto p-4 lg:p-12 space-y-2">
+        <div className="flex-1 overflow-y-auto hidden-scrollbar xl:custom-scrollbar p-4 lg:p-12 space-y-2">
           {messages.map((message) => {
             const showDate = message.date !== lastDate;
             lastDate = message.date;

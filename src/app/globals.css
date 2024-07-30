@@ -3,11 +3,20 @@
 @tailwind utilities;
 
 .custom-scrollbar::-webkit-scrollbar {
-  width: 3px; /* Width of the scrollbar */
+  width: 3px;
   height: 12px;
 }
 
 .custom-scrollbar::-webkit-scrollbar-thumb {
-  background: grey; /* Color of the scrollbar */
-  border-radius: 12px; /* Rounded corners */
+  background: grey;
+  border-radius: 12px;
+}
+
+.hidden-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+
+.hidden-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
 }
