@@ -1,5 +1,6 @@
 import ChatList from "@/components/ChatList";
 import ChatRoom from "@/components/ChatRoom";
+import ProfileSidebar from "@/components/ProfileSidebar";
 import React from "react";
 
 export default function ChatDetailsPage() {
@@ -14,6 +15,9 @@ export default function ChatDetailsPage() {
         <div className="w-full bg-gray-200 h-screen ">
           <ChatRoom />
         </div>
+
+        {/**Profile Sidebar */}
+        <ProfileSidebar />
       </div>
     </div>
   );
