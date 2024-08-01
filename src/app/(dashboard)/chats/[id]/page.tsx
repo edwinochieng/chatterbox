@@ -12,7 +12,7 @@ export default function ChatDetailsPage() {
         </div>
 
         {/**Chat room */}
-        <div className="w-full bg-gray-200 h-screen ">
+        <div className="w-full h-screen ">
           <ChatRoom />
         </div>
 
