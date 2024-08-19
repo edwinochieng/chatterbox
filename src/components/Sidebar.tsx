@@ -1,14 +1,42 @@
 "use client";
 import Link from "next/link";
 import React, { useState } from "react";
-import { FaUserAlt, FaCog } from "react-icons/fa";
+import { FaUserAlt, FaCog, FaUserFriends } from "react-icons/fa";
 import { RiMessage3Fill } from "react-icons/ri";
 import { FiMenu } from "react-icons/fi";
-import { MdLogout } from "react-icons/md";
+import { MdLogout, MdSearch } from "react-icons/md";
 import { signOut } from "next-auth/react";
 import { redirect } from "next/dist/server/api-utils";
 
-const Sidebar = () => {
+const sidebarLinks = [
+  {
+    name: "Messages",
+    path: "/chats",
+    icon: <RiMessage3Fill size={24} />,
+  },
+  {
+    name: "Discover",
+    path: "/discover",
+    icon: <MdSearch size={24} />,
+  },
+  {
+    name: "Friends",
+    path: "/friends",
+    icon: <FaUserFriends size={24} />,
+  },
+  {
+    name: "Profile",
+    path: "/profile/123",
+    icon: <FaUserAlt size={24} />,
+  },
+  {
+    name: "Settings",
+    path: "/settings",
+    icon: <FaCog size={24} />,
+  },
+];
+
+export default function Sidebar() {
   const [isOpen, setIsOpen] = useState(false);
 
   const toggleSidebar = () => {
@@ -31,33 +59,17 @@ const Sidebar = () => {
           </button>
 
           <ul className="mt-24 space-y-2 font-medium">
-            <li>
-              <Link
-                href="/chats"
-                className="flex items-center space-x-4 py-4 px-2 hover:bg-indigo-100 rounded-[6px] cursor-pointer"
-              >
-                <RiMessage3Fill size={24} />
-                {isOpen && <span className="text-lg">Messages</span>}
-              </Link>
-            </li>
-            <li>
-              <Link
-                href="/profile/1"
-                className="flex items-center space-x-4 py-4 px-2 hover:bg-indigo-100 rounded-[6px] cursor-pointer"
-              >
-                <FaUserAlt size={24} />
-                {isOpen && <span className="text-lg">Profile</span>}
-              </Link>
-            </li>
-            <li>
-              <Link
-                href="/settings"
-                className="flex items-center space-x-4 py-4 px-2 hover:bg-indigo-100 rounded-[6px] cursor-pointer"
-              >
-                <FaCog size={24} />
-                {isOpen && <span className="text-lg">Settings</span>}
-              </Link>
-            </li>
+            {sidebarLinks.map((item, index) => (
+              <li key={index}>
+                <Link
+                  href={item.path}
+                  className="flex items-center space-x-4 py-4 px-2 hover:bg-indigo-100 rounded-[6px] cursor-pointer"
+                >
+                  <div>{item.icon}</div>
+                  {isOpen && <span className="text-lg">{item.name}</span>}
+                </Link>
+              </li>
+            ))}
           </ul>
           <ul className="absolute bottom-8 w-full">
             <li
@@ -72,6 +84,4 @@ const Sidebar = () => {
       </div>
     </div>
   );
-};
-
-export default Sidebar;
+}
