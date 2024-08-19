@@ -7,6 +7,7 @@ import { FiMenu } from "react-icons/fi";
 import { MdLogout, MdSearch } from "react-icons/md";
 import { signOut } from "next-auth/react";
 import { redirect } from "next/dist/server/api-utils";
+import { usePathname } from "next/navigation";
 
 const sidebarLinks = [
   {
@@ -38,6 +39,7 @@ const sidebarLinks = [
 
 export default function Sidebar() {
   const [isOpen, setIsOpen] = useState(false);
+  const pathname = usePathname();
 
   const toggleSidebar = () => {
     setIsOpen(!isOpen);
@@ -63,7 +65,9 @@ export default function Sidebar() {
               <li key={index}>
                 <Link
                   href={item.path}
-                  className="flex items-center space-x-4 py-4 px-2 hover:bg-indigo-100 rounded-[6px] cursor-pointer"
+                  className={`flex items-center space-x-4 py-4 px-2 hover:bg-indigo-100 rounded-[6px] cursor-pointer ${
+                    pathname === item.path ? "bg-indigo-200" : "bg-transparent"
+                  }`}
                 >
                   <div>{item.icon}</div>
                   {isOpen && <span className="text-lg">{item.name}</span>}
