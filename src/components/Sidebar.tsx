@@ -1,7 +1,7 @@
 "use client";
 import Link from "next/link";
 import React, { useState } from "react";
-import { FaUserAlt, FaCog, FaUserFriends } from "react-icons/fa";
+import { FaCog, FaUserFriends } from "react-icons/fa";
 import { IoNotificationsSharp } from "react-icons/io5";
 import { RiMessage3Fill } from "react-icons/ri";
 import { FiMenu } from "react-icons/fi";
@@ -30,11 +30,7 @@ const sidebarLinks = [
     path: "/notifications",
     icon: <IoNotificationsSharp size={24} />,
   },
-  {
-    name: "Profile",
-    path: "/profile/123",
-    icon: <FaUserAlt size={24} />,
-  },
+
   {
     name: "Settings",
     path: "/settings",
