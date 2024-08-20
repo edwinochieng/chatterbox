@@ -1,8 +1,9 @@
 "use client";
 import React from "react";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+
 import { useRouter } from "next/navigation";
 import TextInput from "./TextInput";
+import Navbar from "./Navbar";
 
 const messages = [
   { id: 1, sender: "user1", content: "Hello!", date: "Yesterday" },
@@ -65,24 +66,8 @@ export default function ChatRoom() {
   return (
     <div>
       <div className="flex flex-col h-screen  ">
-        {/* Navbar */}
-        <div className="py-4 px-4 lg:px-12 bg-primary">
-          <div className="flex flex-row justify-between">
-            <div className="flex items-center space-x-4">
-              <Avatar className="h-[48px] w-[48px]">
-                <AvatarImage src="/profile.jpg" />
-                <AvatarFallback>CN</AvatarFallback>
-              </Avatar>
-              <div className="flex flex-col">
-                <span className="font-semibold text-2xl">John Doe</span>
-                <span className="text-base font-medium text-green-500">
-                  Online
-                </span>
-              </div>
-            </div>
-            <div></div>
-          </div>
-        </div>
+        {/* Chat Navbar */}
+        <Navbar />
 
         {/* Chat Messages */}
         <div className="flex-1 overflow-y-auto hidden-scrollbar xl:custom-scrollbar p-4 lg:p-12 space-y-2">
