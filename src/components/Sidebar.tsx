@@ -2,11 +2,11 @@
 import Link from "next/link";
 import React, { useState } from "react";
 import { FaUserAlt, FaCog, FaUserFriends } from "react-icons/fa";
+import { IoNotificationsSharp } from "react-icons/io5";
 import { RiMessage3Fill } from "react-icons/ri";
 import { FiMenu } from "react-icons/fi";
 import { MdLogout, MdSearch } from "react-icons/md";
 import { signOut } from "next-auth/react";
-import { redirect } from "next/dist/server/api-utils";
 import { usePathname } from "next/navigation";
 
 const sidebarLinks = [
@@ -24,6 +24,11 @@ const sidebarLinks = [
     name: "Friends",
     path: "/friends",
     icon: <FaUserFriends size={24} />,
+  },
+  {
+    name: "Notifications",
+    path: "/notifications",
+    icon: <IoNotificationsSharp size={24} />,
   },
   {
     name: "Profile",
