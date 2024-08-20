@@ -1,12 +1,18 @@
 "use client";
 import React from "react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { useRouter } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 
-export default function Chat() {
+export default function Chat({ chat, index }: any) {
   const router = useRouter();
+  const pathname = usePathname();
   return (
-    <div className="w-full flex flex-row items-center my-3 px-6 py-2 cursor-pointer hover:bg-indigo-50 " onClick={() => router.push("/chats/123")}>
+    <div
+      className={`w-full flex flex-row items-center my-3 px-6 py-2 cursor-pointer hover:bg-indigo-50 ${
+        pathname === `/chats/${index}` ? "bg-indigo-100" : "bg-transparent"
+      }`}
+      onClick={() => router.push(`/chats/${index}`)}
+    >
       <Avatar className="h-[42px] w-[42px]">
         <AvatarImage src="/profile.jpg" />
         <AvatarFallback>CN</AvatarFallback>

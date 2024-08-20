@@ -66,7 +66,10 @@ export default function Sidebar() {
                 <Link
                   href={item.path}
                   className={`flex items-center space-x-4 py-4 px-2 hover:bg-indigo-100 rounded-[6px] cursor-pointer ${
-                    pathname === item.path ? "bg-indigo-200" : "bg-transparent"
+                    pathname === item.path ||
+                    pathname.startsWith(`${item.path}/`)
+                      ? "bg-indigo-200"
+                      : "bg-transparent"
                   }`}
                 >
                   <div>{item.icon}</div>

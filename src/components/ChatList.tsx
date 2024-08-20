@@ -40,7 +40,7 @@ export default function ChatList() {
 
         <div>
           {filteredChats.map((chat, index) => (
-            <Chat key={index} />
+            <Chat key={index} index={index} chat={chat} />
           ))}
         </div>
       </div>
