@@ -33,7 +33,7 @@ const sidebarLinks = [
 
   {
     name: "Settings",
-    path: "/settings",
+    path: "/settings/profile",
     icon: <FaCog size={24} />,
   },
 ];
