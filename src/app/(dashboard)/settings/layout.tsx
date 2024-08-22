@@ -32,7 +32,7 @@ export default function SettingsLayout({
           ))}
         </ul>
       </div>
-      <div className="hidden lg:block w-full bg-gray-200 h-screen">
+      <div className="hidden lg:block w-full bg-gray-200 h-screen px-4">
         {children}
       </div>
     </div>
