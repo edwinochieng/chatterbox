@@ -15,7 +15,7 @@ export default function TextInput() {
         maxRows={5}
       />
       <div className="cursor-pointer">
-        <BsFillSendFill size={28} className="text-accent" />
+        <BsFillSendFill size={28} className="text-accentBg" />
       </div>
     </div>
   );

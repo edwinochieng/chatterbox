@@ -89,7 +89,7 @@ export default function ChatRoom() {
                   <div
                     className={`max-w-xs px-4 py-3 rounded-xl shadow ${
                       message.sender === "user1"
-                        ? "bg-accent text-white"
+                        ? "bg-accentBg text-white"
                         : "bg-white text-gray-800"
                     }`}
                   >
