@@ -5,7 +5,7 @@ import { FaCog, FaUserFriends } from "react-icons/fa";
 import { IoNotificationsSharp } from "react-icons/io5";
 import { RiMessage3Fill } from "react-icons/ri";
 import { FiMenu } from "react-icons/fi";
-import { MdLogout, MdSearch } from "react-icons/md";
+import { MdLogout } from "react-icons/md";
 import { signOut } from "next-auth/react";
 import { usePathname } from "next/navigation";
 
@@ -14,11 +14,6 @@ const sidebarLinks = [
     name: "Messages",
     path: "/chats",
     icon: <RiMessage3Fill size={24} />,
-  },
-  {
-    name: "Discover",
-    path: "/discover",
-    icon: <MdSearch size={24} />,
   },
   {
     name: "Friends",
