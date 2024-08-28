@@ -3,7 +3,7 @@ import React from "react";
 
 import { useRouter } from "next/navigation";
 import TextInput from "./TextInput";
-import Navbar from "./Navbar";
+import ChatNavbar from "./ChatNavbar";
 
 const messages = [
   { id: 1, sender: "user1", content: "Hello!", date: "Yesterday" },
@@ -67,7 +67,7 @@ export default function ChatRoom() {
     <div>
       <div className="flex flex-col h-screen  ">
         {/* Chat Navbar */}
-        <Navbar />
+        <ChatNavbar />
 
         {/* Chat Messages */}
         <div className="flex-1 overflow-y-auto hidden-scrollbar xl:custom-scrollbar p-4 lg:p-12 space-y-2">

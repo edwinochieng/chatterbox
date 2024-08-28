@@ -3,7 +3,7 @@
 import React from "react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 
-export default function Navbar() {
+export default function ChatNavbar() {
   return (
     <div className="py-4 px-4 lg:px-12 bg-primary border border-t-transparent border-x-transparent">
       <div className="flex flex-row justify-between">
