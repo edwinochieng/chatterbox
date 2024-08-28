@@ -1,6 +1,5 @@
 "use client";
 
-import SettingsNavbar from "@/components/SettingsNavbar";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
@@ -17,6 +16,7 @@ import {
 } from "@/components/ui/form";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { toast } from "@/components/ui/use-toast";
+import MainNavbar from "@/components/MainNavbar";
 
 const appearanceFormSchema = z.object({
   theme: z.enum(["light", "dark"], {
@@ -52,7 +52,7 @@ export default function AppearanceSettings() {
   }
   return (
     <div>
-      <SettingsNavbar
+      <MainNavbar
         title="Appearance"
         description="Customize the appearance of the app. Automatically switch between day and night themes."
       />

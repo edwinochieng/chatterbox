@@ -4,7 +4,7 @@ interface Props {
   title: string;
   description: string;
 }
-export default function SettingsNavbar({ title, description }: Props) {
+export default function MainNavbar({ title, description }: Props) {
   return (
     <div className="border border-t-transparent border-x-transparent pt-8 pb-5">
       <h1 className="font-semibold text-gray-800 text-2xl ">{title}</h1>

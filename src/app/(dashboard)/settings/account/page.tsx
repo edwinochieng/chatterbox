@@ -1,6 +1,5 @@
 "use client";
 
-import SettingsNavbar from "@/components/SettingsNavbar";
 import { Input } from "@/components/ui/input";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
@@ -19,6 +18,7 @@ import {
 import { toast } from "@/components/ui/use-toast";
 
 import React from "react";
+import MainNavbar from "@/components/MainNavbar";
 
 const FormSchema = z.object({
   email: z.string(),
@@ -46,10 +46,7 @@ export default function AccountSettings() {
   }
   return (
     <div>
-      <SettingsNavbar
-        title="Account"
-        description="Update your account settings."
-      />
+      <MainNavbar title="Account" description="Update your account settings." />
       <div className="pt-12">
         <Form {...form}>
           <form
