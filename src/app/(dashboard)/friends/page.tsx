@@ -1,12 +1,11 @@
 import FriendsList from "@/components/FriendsList";
-import MainNavbar from "@/components/MainNavbar";
 import React from "react";
 
 export default function MyFriendsPage() {
   return (
     <div>
       <div className="flex flex-row ">
-        <div className="w-full lg:max-w-[300px] xl:max-w-[380px]">
+        <div className="w-full lg:max-w-[300px] xl:max-w-[400px]">
           <FriendsList />
         </div>
 

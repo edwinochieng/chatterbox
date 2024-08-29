@@ -33,7 +33,7 @@ export default function FriendsList() {
             </div>
             <input
               type="text"
-              placeholder="Search chats"
+              placeholder="Find friends"
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
               className="flex-1 ml-2 py-2 border-none outline-none bg-transparent"
