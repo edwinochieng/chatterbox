@@ -2,7 +2,7 @@
 import Link from "next/link";
 import React, { useState } from "react";
 import { FaCog, FaUserFriends } from "react-icons/fa";
-import { IoNotificationsSharp } from "react-icons/io5";
+import { IoPersonAdd } from "react-icons/io5";
 import { RiMessage3Fill } from "react-icons/ri";
 import { FiMenu } from "react-icons/fi";
 import { MdLogout } from "react-icons/md";
@@ -15,15 +15,16 @@ const sidebarLinks = [
     path: "/chats",
     icon: <RiMessage3Fill size={24} />,
   },
+
+  {
+    name: "Discover",
+    path: "/discover",
+    icon: <IoPersonAdd size={24} />,
+  },
   {
     name: "Friends",
     path: "/friends",
     icon: <FaUserFriends size={24} />,
-  },
-  {
-    name: "Notifications",
-    path: "/notifications",
-    icon: <IoNotificationsSharp size={24} />,
   },
 
   {
