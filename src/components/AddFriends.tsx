@@ -34,16 +34,16 @@ export default function AddFriends() {
           <h1 className="text-3xl font-semibold text-gray-800">Add Friends</h1>
 
           <div className="flex flex-row items-center justify-between p-1 px-4 w-full my-4 border rounded-[8px] bg-gray-100">
-            <div onClick={handleSearch}>
-              <CiSearch size={20} />
-            </div>
             <input
               type="text"
               placeholder="Search by email"
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="flex-1 ml-2 py-2 border-none outline-none bg-transparent"
+              className="flex-1 mr-2 py-2 border-none outline-none bg-transparent"
             />
+            <div onClick={handleSearch}>
+              <CiSearch size={20} />
+            </div>
           </div>
         </div>
 
