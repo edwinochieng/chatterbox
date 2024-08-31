@@ -17,23 +17,22 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { toast } from "@/components/ui/use-toast";
-import React from "react";
+import React, { useRef } from "react";
 import MainNavbar from "@/components/MainNavbar";
 
 const FormSchema = z.object({
   fullname: z.string(),
-  username: z.string().min(2, {
-    message: "Username must be at least 2 characters.",
-  }),
   bio: z.string(),
 });
 
 export default function ProfileSettings() {
+  const fileInputRef = useRef<HTMLInputElement | null>(null);
+
   const form = useForm<z.infer<typeof FormSchema>>({
     resolver: zodResolver(FormSchema),
     defaultValues: {
       fullname: "",
-      username: "",
+
       bio: "",
     },
   });
@@ -48,6 +47,20 @@ export default function ProfileSettings() {
       ),
     });
   }
+
+  const handleButtonClick = (): void => {
+    if (fileInputRef.current) {
+      fileInputRef.current.click();
+    }
+  };
+
+  const handleFileChange = (event: any): void => {
+    const file = event.target.files?.[0];
+    if (file) {
+      // Handle the file upload or preview logic here
+      console.log("Selected file:", file);
+    }
+  };
   return (
     <div>
       <MainNavbar
@@ -77,22 +90,7 @@ export default function ProfileSettings() {
                   </FormItem>
                 )}
               />
-              <FormField
-                control={form.control}
-                name="username"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Username</FormLabel>
-                    <FormControl>
-                      <Input placeholder="shadcn" {...field} />
-                    </FormControl>
-                    <FormDescription>
-                      This is your public display name.
-                    </FormDescription>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
+
               <FormField
                 control={form.control}
                 name="bio"
@@ -122,14 +120,28 @@ export default function ProfileSettings() {
           </Form>
         </div>
         <div className="flex-1">
-          <div>
-            <Avatar className="h-[170px] w-[170px]">
-              <AvatarImage src="/profile.jpg" />
-              <AvatarFallback>CN</AvatarFallback>
-            </Avatar>
-          </div>
-          <div className="mt-3 grid w-full max-w-sm items-center gap-1.5">
-            <Input id="picture" type="file" placeholder="Edit" />
+          <div className="flex flex-col justify-center">
+            <div>
+              <Avatar className="h-[170px] w-[170px]">
+                <AvatarImage src="/profile.jpg" />
+                <AvatarFallback>CN</AvatarFallback>
+              </Avatar>
+            </div>
+            <div className="mt-4">
+              <button
+                onClick={handleButtonClick}
+                className="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-300"
+              >
+                Edit Profile Pic
+              </button>
+              <input
+                type="file"
+                accept="image/*"
+                ref={fileInputRef}
+                onChange={handleFileChange}
+                className="hidden"
+              />
+            </div>
           </div>
         </div>
       </div>
