@@ -3,9 +3,10 @@
 import React from "react";
 import Link from "next/link";
 import { useForm } from "react-hook-form";
-import { signIn } from "next-auth/react";
+import { useMutation } from "@tanstack/react-query";
 import { toast } from "react-hot-toast";
 import { useRouter } from "next/navigation";
+import axios from "axios";
 
 interface LoginInputs {
   email: string;
@@ -21,22 +22,23 @@ export default function LoginPage() {
     formState: { errors },
   } = useForm<LoginInputs>();
 
+  const { mutate, isPending } = useMutation({
+    mutationFn: (userData: LoginInputs) => {
+      return axios.post(`${process.env.BASE_URL}/auth/signup`, userData);
+    },
+    onSuccess: () => {
+      toast.success("Logged in successfully!");
+      router.push("/chats");
+    },
+    onError: (error: any) => {
+      toast.error(error.response?.data?.msg || "Something went wrong!");
+    },
+  });
   const submitHandler = async ({ email, password }: LoginInputs) => {
-    try {
-      const result = await signIn("credentials", {
-        redirect: false,
-        email,
-        password,
-      });
-      if (result!.error) {
-        toast.error(result!.error);
-      } else {
-        toast.success("Logged in");
-        router.push("/chats");
-      }
-    } catch (err) {
-      console.log(err);
-    }
+    mutate({
+      email,
+      password,
+    });
   };
   return (
     <div className="max-w-[700px] mx-auto">
@@ -93,8 +95,9 @@ export default function LoginPage() {
         <button
           type="submit"
           className="block w-full rounded-lg bg-indigo-500 px-5 py-3 text-sm font-medium text-white"
+          disabled={isPending}
         >
-          Sign in
+          {isPending ? "Signing in..." : "Sign in"}
         </button>
 
         <p className="text-center text-sm text-gray-500">

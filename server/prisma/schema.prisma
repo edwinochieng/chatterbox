@@ -1,6 +1,6 @@
-
 generator client {
   provider = "prisma-client-js"
+  binaryTargets = ["native", "debian-openssl-3.0.x"]
 }
 
 datasource db {
@@ -8,67 +8,60 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-
 model User {
-  id            String          @id @default(cuid())
+  id            String               @id @default(cuid())
   fullName      String
-  email         String          @unique
+  email         String               @unique
   emailVerified DateTime?
   password      String
   imageUrl      String?
   bio           String?
-  messages      Message[]
+  createdAt     DateTime             @default(now())
+  updatedAt     DateTime             @updatedAt
   conversations ConversationMember[]
+  messages      Message[]
   readReceipts  ReadReceipt[]
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
 }
 
 model Message {
-  id            String    @id @default(cuid())
-  content       String
-  senderId      String
+  id             String        @id @default(cuid())
+  content        String
+  senderId       String
   conversationId String
-  createdAt     DateTime  @default(now())
-  updatedAt     DateTime  @updatedAt
-
-  sender        User        @relation(fields: [senderId], references: [id], onDelete: Cascade)
-  conversation  Conversation @relation(fields: [conversationId], references: [id], onDelete: Cascade)
-  readReceipts  ReadReceipt[]
+  createdAt      DateTime      @default(now())
+  updatedAt      DateTime      @updatedAt
+  conversation   Conversation  @relation(fields: [conversationId], references: [id], onDelete: Cascade)
+  sender         User          @relation(fields: [senderId], references: [id], onDelete: Cascade)
+  readReceipts   ReadReceipt[]
 }
 
 model Conversation {
-  id          String                @id @default(cuid())
-  isGroup     Boolean               @default(false)
-  name        String?
-  imageUrl    String?
-  createdAt   DateTime              @default(now())
-  updatedAt   DateTime              @updatedAt
-
-  messages    Message[]
-  members     ConversationMember[]
+  id        String               @id @default(cuid())
+  name      String?
+  imageUrl  String?
+  createdAt DateTime             @default(now())
+  updatedAt DateTime             @updatedAt
+  members   ConversationMember[]
+  messages  Message[]
 }
 
 model ConversationMember {
   userId         String
   conversationId String
-  joinedAt       DateTime  @default(now())
-
-  user           User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+  joinedAt       DateTime     @default(now())
   conversation   Conversation @relation(fields: [conversationId], references: [id], onDelete: Cascade)
+  user           User         @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@id([userId, conversationId])
 }
-
 
 model ReadReceipt {
   id        String   @id @default(cuid())
   userId    String
   messageId String
   readAt    DateTime @default(now())
-
-  user      User      @relation(fields: [userId], references: [id], onDelete: Cascade)
-  message   Message   @relation(fields: [messageId], references: [id], onDelete: Cascade)
+  message   Message  @relation(fields: [messageId], references: [id], onDelete: Cascade)
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@unique([userId, messageId])
 }

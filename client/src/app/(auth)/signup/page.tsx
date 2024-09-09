@@ -3,16 +3,22 @@
 import React from "react";
 import Link from "next/link";
 import { useForm } from "react-hook-form";
-import { signIn } from "next-auth/react";
 import axios from "axios";
-import { toast } from "react-hot-toast";
 import { useRouter } from "next/navigation";
+import { useMutation } from "@tanstack/react-query";
+import toast from "react-hot-toast";
 
 interface SignUpInputs {
-  name: string;
+  fullName: string;
   email: string;
   password: string;
   confirmPassword: string;
+}
+
+interface UserData {
+  fullName: string;
+  email: string;
+  password: string;
 }
 
 export default function SignUpPage() {
@@ -25,25 +31,28 @@ export default function SignUpPage() {
     formState: { errors },
   } = useForm<SignUpInputs>();
 
-  const submitHandler = async ({ name, email, password }: SignUpInputs) => {
-    try {
-      await axios.post("/api/auth/signup", { name, email, password });
+  const { mutate, isPending } = useMutation({
+    mutationFn: (newUser: UserData) => {
+      return axios.post(
+        `${process.env.NEXT_PUBLIC_BASE_URL}/auth/signup`,
+        newUser
+      );
+    },
+    onSuccess: () => {
+      toast.success("Account created successfully!");
+      router.push("/chats");
+    },
+    onError: (error: any) => {
+      toast.error(error.response?.data?.msg || "Something went wrong!");
+    },
+  });
 
-      const result = await signIn("credentials", {
-        redirect: false,
-        email,
-        password,
-      });
-
-      if (result!.error) {
-        toast.error(result!.error);
-      } else {
-        toast.success("Registration successful");
-        router.push("/chats");
-      }
-    } catch (err) {
-      console.log(err);
-    }
+  const submitHandler = ({ fullName, email, password }: UserData) => {
+    mutate({
+      fullName,
+      email,
+      password,
+    });
   };
 
   return (
@@ -61,17 +70,17 @@ export default function SignUpPage() {
 
           <div className="relative mt-1">
             <input
-              {...register("name", {
+              {...register("fullName", {
                 required: "Please enter your name",
               })}
               type="name"
-              id="name"
+              id="fullName"
               className="w-full rounded-lg border border-gray-200 p-3 sm:p-4 pr-12 text-sm focus:outline-indigo-500"
               placeholder="Enter name"
             />
-            {errors.name && (
+            {errors.fullName && (
               <span className="text-red-500 pt-1 text-sm">
-                {errors.name.message}
+                {errors.fullName.message}
               </span>
             )}
           </div>
@@ -158,8 +167,9 @@ export default function SignUpPage() {
         <button
           type="submit"
           className="block w-full rounded-lg bg-indigo-500 px-5 py-3 text-sm font-medium text-white"
+          disabled={isPending}
         >
-          Sign up
+          {isPending ? "Signing up..." : "Sign up"}
         </button>
 
         <p className="text-center text-sm text-gray-500">
