@@ -7,8 +7,8 @@ import {
 
 const router = Router();
 
-router.post("/auth/signup", signup);
-router.post("/auth/login", login);
-router.post("/auth/refresh-token", refreshAccessToken);
+router.post("/signup", signup);
+router.post("/login", login);
+router.post("/refresh-token", refreshAccessToken);
 
 export default router;

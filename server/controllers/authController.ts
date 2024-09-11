@@ -7,19 +7,18 @@ import prisma from "../prisma/client";
 
 const createAccessToken = (userId: string) => {
   return jwt.sign({ userId }, process.env.JWT_SECRET as string, {
-    expiresIn: "1h", // Access token valid for 1 hour
+    expiresIn: "1h",
   });
 };
 
 const createRefreshToken = (userId: string) => {
   return jwt.sign({ userId }, process.env.JWT_REFRESH_SECRET as string, {
-    expiresIn: "7d", // Refresh token valid for 7 days
+    expiresIn: "7d",
   });
 };
 
 export const signup = async (req: Request, res: Response) => {
   try {
-    // Validate and parse request body using Zod
     const validatedData = userSchema.parse(req.body);
 
     const { fullName, email, password } = validatedData;
@@ -51,27 +50,22 @@ export const signup = async (req: Request, res: Response) => {
   }
 };
 
-// Login function
 export const login = async (req: Request, res: Response) => {
   try {
-    // Validate and parse request body using Zod
     const validatedData = userSchema.parse(req.body);
 
     const { email, password } = validatedData;
 
-    // Check if user exists
     const user = await prisma.user.findUnique({ where: { email } });
     if (!user) {
       return res.status(400).json({ msg: "Invalid credentials" });
     }
 
-    // Check password
     const isMatch = await bcrypt.compare(password, user.password);
     if (!isMatch) {
       return res.status(400).json({ msg: "Invalid credentials" });
     }
 
-    // Create JWTs (access & refresh tokens)
     const accessToken = createAccessToken(user.id);
     const refreshToken = createRefreshToken(user.id);
 
@@ -85,7 +79,6 @@ export const login = async (req: Request, res: Response) => {
   }
 };
 
-// Refresh token endpoint
 export const refreshAccessToken = (req: Request, res: Response) => {
   const refreshToken = req.body.refreshToken;
 
