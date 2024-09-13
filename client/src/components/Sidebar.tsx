@@ -6,7 +6,7 @@ import { IoPersonAdd } from "react-icons/io5";
 import { RiMessage3Fill } from "react-icons/ri";
 import { FiMenu } from "react-icons/fi";
 import { MdLogout } from "react-icons/md";
-import { signOut } from "next-auth/react";
+
 import { usePathname } from "next/navigation";
 
 const sidebarLinks = [
@@ -76,10 +76,7 @@ export default function Sidebar() {
             ))}
           </ul>
           <ul className="absolute bottom-8 w-full">
-            <li
-              className="flex items-center space-x-4 py-4 px-2 hover:bg-indigo-100 rounded-[6px] font-semibold cursor-pointer"
-              onClick={() => signOut()}
-            >
+            <li className="flex items-center space-x-4 py-4 px-2 hover:bg-indigo-100 rounded-[6px] font-semibold cursor-pointer">
               <MdLogout size={24} />
               {isOpen && <span className="text-lg">Log out</span>}
             </li>

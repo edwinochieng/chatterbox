@@ -24,7 +24,10 @@ export default function LoginPage() {
 
   const { mutate, isPending } = useMutation({
     mutationFn: (userData: LoginInputs) => {
-      return axios.post(`${process.env.BASE_URL}/auth/signup`, userData);
+      return axios.post(
+        `${process.env.NEXT_PUBLIC_BASE_URL}/auth/login`,
+        userData
+      );
     },
     onSuccess: () => {
       toast.success("Logged in successfully!");

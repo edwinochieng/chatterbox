@@ -1,7 +1,7 @@
 import { Request, Response } from "express";
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
-import { userSchema } from "../validators/userValidator";
+import { loginSchema, signupSchema } from "../validators/userValidator";
 import z from "zod";
 import prisma from "../prisma/client";
 
@@ -19,7 +19,7 @@ const createRefreshToken = (userId: string) => {
 
 export const signup = async (req: Request, res: Response) => {
   try {
-    const validatedData = userSchema.parse(req.body);
+    const validatedData = signupSchema.parse(req.body);
 
     const { fullName, email, password } = validatedData;
 
@@ -52,7 +52,7 @@ export const signup = async (req: Request, res: Response) => {
 
 export const login = async (req: Request, res: Response) => {
   try {
-    const validatedData = userSchema.parse(req.body);
+    const validatedData = loginSchema.parse(req.body);
 
     const { email, password } = validatedData;
 
