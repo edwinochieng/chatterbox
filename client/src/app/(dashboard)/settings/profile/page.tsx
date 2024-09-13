@@ -16,12 +16,14 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
-import { toast } from "@/components/ui/use-toast";
+import { toast } from "react-hot-toast";
 import React, { useRef } from "react";
 import MainNavbar from "@/components/MainNavbar";
+import { useMutation } from "@tanstack/react-query";
+import axios from "axios";
 
 const FormSchema = z.object({
-  fullname: z.string(),
+  fullName: z.string(),
   bio: z.string(),
 });
 
@@ -31,22 +33,31 @@ export default function ProfileSettings() {
   const form = useForm<z.infer<typeof FormSchema>>({
     resolver: zodResolver(FormSchema),
     defaultValues: {
-      fullname: "",
-
+      fullName: "",
       bio: "",
     },
   });
 
-  function onSubmit(data: z.infer<typeof FormSchema>) {
-    toast({
-      title: "You submitted the following values:",
-      description: (
-        <pre className="mt-2 w-[340px] rounded-md bg-slate-950 p-4">
-          <code className="text-white">{JSON.stringify(data, null, 2)}</code>
-        </pre>
-      ),
+  const { mutate, isPending } = useMutation({
+    mutationFn: (data: z.infer<typeof FormSchema>) => {
+      return axios.put(
+        `${process.env.NEXT_PUBLIC_BASE_URL}/api/user/profile-settings`,
+        data
+      );
+    },
+    onSuccess: () => {
+      toast.success("Profile details updated successfully!");
+    },
+    onError: (error: any) => {
+      toast.error(error.response?.data?.msg || "Something went wrong!");
+    },
+  });
+  const submitHandler = async (data: z.infer<typeof FormSchema>) => {
+    mutate({
+      fullName: data.fullName,
+      bio: data.bio,
     });
-  }
+  };
 
   const handleButtonClick = (): void => {
     if (fileInputRef.current) {
@@ -71,12 +82,12 @@ export default function ProfileSettings() {
         <div className="flex-1">
           <Form {...form}>
             <form
-              onSubmit={form.handleSubmit(onSubmit)}
+              onSubmit={form.handleSubmit(submitHandler)}
               className="w-2/3 space-y-6"
             >
               <FormField
                 control={form.control}
-                name="fullname"
+                name="fullName"
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel>Name</FormLabel>
@@ -113,8 +124,9 @@ export default function ProfileSettings() {
               <Button
                 type="submit"
                 className="text-white bg-black rounded-lg hover:bg-black/70"
+                disabled={isPending}
               >
-                Update Profile
+                {isPending ? "Updating..." : "Update profile"}
               </Button>
             </form>
           </Form>

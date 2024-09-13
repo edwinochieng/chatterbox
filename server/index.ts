@@ -2,6 +2,7 @@ import express, { Request, Response, NextFunction } from "express";
 import dotenv from "dotenv";
 import cors from "cors";
 import authRoutes from "./routes/authRoutes";
+import userRoutes from "./routes/userRoutes";
 
 dotenv.config();
 
@@ -13,10 +14,9 @@ app.use(cors());
 
 //routes
 app.use("/auth", authRoutes);
+app.use("/api/user", userRoutes);
 
-// Error handling middleware
 app.use((err: Error, req: Request, res: Response, next: NextFunction) => {
-  console.error(err.stack);
   res.status(500).json({ message: "Something went wrong", error: err.message });
 });
 

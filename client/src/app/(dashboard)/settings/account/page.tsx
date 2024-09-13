@@ -14,11 +14,11 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
-
-import { toast } from "@/components/ui/use-toast";
-
+import { toast } from "react-hot-toast";
 import React from "react";
 import MainNavbar from "@/components/MainNavbar";
+import { useMutation } from "@tanstack/react-query";
+import axios from "axios";
 
 const FormSchema = z.object({
   email: z.string(),
@@ -34,23 +34,34 @@ export default function AccountSettings() {
     },
   });
 
-  function onSubmit(data: z.infer<typeof FormSchema>) {
-    toast({
-      title: "You submitted the following values:",
-      description: (
-        <pre className="mt-2 w-[340px] rounded-md bg-slate-950 p-4">
-          <code className="text-white">{JSON.stringify(data, null, 2)}</code>
-        </pre>
-      ),
+  const { mutate, isPending } = useMutation({
+    mutationFn: (data: z.infer<typeof FormSchema>) => {
+      return axios.put(
+        `${process.env.NEXT_PUBLIC_BASE_URL}/api/user/account-settings`,
+        data
+      );
+    },
+    onSuccess: () => {
+      toast.success("Account details updated successfully!");
+    },
+    onError: (error: any) => {
+      toast.error(error.response?.data?.msg || "Something went wrong!");
+    },
+  });
+  const submitHandler = async (data: z.infer<typeof FormSchema>) => {
+    mutate({
+      email: data.email,
+      password: data.password,
     });
-  }
+  };
+
   return (
     <div>
       <MainNavbar title="Account" description="Update your account settings." />
       <div className="pt-12">
         <Form {...form}>
           <form
-            onSubmit={form.handleSubmit(onSubmit)}
+            onSubmit={form.handleSubmit(submitHandler)}
             className="w-2/3 space-y-6"
           >
             <FormField
@@ -92,8 +103,9 @@ export default function AccountSettings() {
             <Button
               type="submit"
               className="text-white bg-black rounded-lg hover:bg-black/70"
+              disabled={isPending}
             >
-              Update Account Details
+              {isPending ? "Updating.." : "Update Account Details"}
             </Button>
           </form>
         </Form>
