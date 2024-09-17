@@ -7,6 +7,7 @@ import axios from "axios";
 import { useRouter } from "next/navigation";
 import { useMutation } from "@tanstack/react-query";
 import toast from "react-hot-toast";
+import { useAuth } from "@/context/AuthContext";
 
 interface SignUpInputs {
   fullName: string;
@@ -30,6 +31,7 @@ export default function SignUpPage() {
     getValues,
     formState: { errors },
   } = useForm<SignUpInputs>();
+  const { login } = useAuth();
 
   const { mutate, isPending } = useMutation({
     mutationFn: (newUser: UserData) => {
@@ -38,9 +40,13 @@ export default function SignUpPage() {
         newUser
       );
     },
-    onSuccess: () => {
-      toast.success("Account created successfully!");
-      router.push("/chats");
+    onSuccess: (response) => {
+      const tokens = response?.data;
+      if (tokens) {
+        login(tokens);
+        toast.success("Account created successfully!");
+        router.push("/chats");
+      }
     },
     onError: (error: any) => {
       toast.error(error.response?.data?.msg || "Something went wrong!");

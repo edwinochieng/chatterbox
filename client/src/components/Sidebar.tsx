@@ -6,8 +6,9 @@ import { IoPersonAdd } from "react-icons/io5";
 import { RiMessage3Fill } from "react-icons/ri";
 import { FiMenu } from "react-icons/fi";
 import { MdLogout } from "react-icons/md";
-
 import { usePathname } from "next/navigation";
+import { useAuth } from "@/context/AuthContext";
+import { useRouter } from "next/navigation";
 
 const sidebarLinks = [
   {
@@ -37,7 +38,13 @@ const sidebarLinks = [
 export default function Sidebar() {
   const [isOpen, setIsOpen] = useState(false);
   const pathname = usePathname();
+  const { user, logout } = useAuth();
+  const router = useRouter();
 
+  const handleLogOut = () => {
+    logout();
+    router.push("/login");
+  };
   const toggleSidebar = () => {
     setIsOpen(!isOpen);
   };
@@ -76,7 +83,10 @@ export default function Sidebar() {
             ))}
           </ul>
           <ul className="absolute bottom-8 w-full">
-            <li className="flex items-center space-x-4 py-4 px-2 hover:bg-indigo-100 rounded-[6px] font-semibold cursor-pointer">
+            <li
+              onClick={handleLogOut}
+              className="flex items-center space-x-4 py-4 px-2 hover:bg-indigo-100 rounded-[6px] font-semibold cursor-pointer"
+            >
               <MdLogout size={24} />
               {isOpen && <span className="text-lg">Log out</span>}
             </li>

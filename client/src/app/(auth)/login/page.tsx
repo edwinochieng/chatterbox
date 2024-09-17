@@ -7,6 +7,7 @@ import { useMutation } from "@tanstack/react-query";
 import { toast } from "react-hot-toast";
 import { useRouter } from "next/navigation";
 import axios from "axios";
+import { useAuth } from "@/context/AuthContext";
 
 interface LoginInputs {
   email: string;
@@ -21,6 +22,7 @@ export default function LoginPage() {
     handleSubmit,
     formState: { errors },
   } = useForm<LoginInputs>();
+  const { login } = useAuth();
 
   const { mutate, isPending } = useMutation({
     mutationFn: (userData: LoginInputs) => {
@@ -29,9 +31,13 @@ export default function LoginPage() {
         userData
       );
     },
-    onSuccess: () => {
-      toast.success("Logged in successfully!");
-      router.push("/chats");
+    onSuccess: (response) => {
+      const tokens = response?.data;
+      if (tokens) {
+        login(tokens);
+        router.push("/chats");
+        toast.success("Logged in successfully!");
+      }
     },
     onError: (error: any) => {
       toast.error(error.response?.data?.msg || "Something went wrong!");
