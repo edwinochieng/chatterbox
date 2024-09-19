@@ -6,7 +6,7 @@ interface AuthTokens {
 }
 
 interface User {
-  id: string;
+  userId: string;
 }
 
 interface AuthContextType {
