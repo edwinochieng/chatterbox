@@ -3,10 +3,13 @@ import {
   updateAccountSettings,
   updateProfileSettings,
   updateProfilePicture,
+  searchUserByEmail,
 } from "../controllers/userController";
 import { authMiddleware } from "../middleware/authMiddleware";
 
 const router = express.Router();
+
+router.get("/search", authMiddleware, searchUserByEmail);
 
 router.put("/account-settings", authMiddleware, updateAccountSettings);
 
