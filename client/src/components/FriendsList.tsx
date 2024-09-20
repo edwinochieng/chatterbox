@@ -1,25 +1,34 @@
 "use client";
 import React, { useState } from "react";
 import { CiSearch } from "react-icons/ci";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Avatar, AvatarImage } from "@/components/ui/avatar";
+import { useQuery } from "@tanstack/react-query";
+import { useAuth } from "@/context/AuthContext";
+import axios from "axios";
 
 export default function FriendsList() {
   const [searchTerm, setSearchTerm] = useState("");
-  const friends = [
-    "Abel Abel",
-    "Cherry Mansfield",
-    "Drake Aubrey",
-    "Bianca Joe",
-    "Justin Timber",
-    "Halsey Winstead",
-    "Sandy Sims",
-    "Peter Parker",
-    "Lee Grant",
-  ];
 
-  const sortedFriends = friends.sort((a, b) => a.localeCompare(b));
-  const filteredFriends = sortedFriends.filter((friend) =>
-    friend.toLowerCase().includes(searchTerm.toLowerCase())
+  const { authTokens } = useAuth();
+  const { data } = useQuery({
+    queryKey: ["friendsList"],
+    queryFn: async () => {
+      const result = await axios.get(
+        `${process.env.NEXT_PUBLIC_BASE_URL}/api/friends/get-friends`,
+        {
+          headers: {
+            Authorization: `Bearer ${authTokens?.accessToken}`,
+          },
+        }
+      );
+      return result.data;
+    },
+  });
+
+  const myFriends = data?.friends;
+
+  const filteredFriends = myFriends?.filter((friend: any) =>
+    friend.fullName.toLowerCase().includes(searchTerm.toLowerCase())
   );
   return (
     <div className="max-h-screen bg-primary">
@@ -30,7 +39,7 @@ export default function FriendsList() {
           <div className="flex flex-row items-center justify-between p-1 px-4 w-full my-4 border rounded-[8px] bg-gray-100">
             <input
               type="text"
-              placeholder="Find friends"
+              placeholder="Search name"
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
               className="flex-1 mr-2 py-2 border-none outline-none bg-transparent"
@@ -42,20 +51,21 @@ export default function FriendsList() {
         </div>
 
         <div className="mt-4">
-          {filteredFriends.map((friend, index) => (
+          {filteredFriends?.map((friend: any) => (
             <div
-              key={index}
+              key={friend?.id}
               className="flex flex-row items-center space-x-4 my-1 py-2 px-6 cursor-pointer hover:bg-indigo-100"
             >
               <div>
-                <Avatar className="h-[42px] w-[42px]">
-                  <AvatarImage src="/profile.jpg" />
-                  <AvatarFallback>CN</AvatarFallback>
+                <Avatar className="h-[42px] w-[42px] border border-gray-200">
+                  <AvatarImage
+                    src={friend.imageUrl || "/default-profile.jpg"}
+                  />
                 </Avatar>
               </div>
               <div>
                 <span className="text-gray-800 font-semibold text-xl">
-                  {friend}
+                  {friend?.fullName}
                 </span>
               </div>
             </div>
