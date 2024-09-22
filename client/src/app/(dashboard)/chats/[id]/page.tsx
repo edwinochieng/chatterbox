@@ -1,9 +1,38 @@
+"use client";
 import ChatList from "@/components/ChatList";
 import ChatRoom from "@/components/ChatRoom";
 import ProfileSidebar from "@/components/ProfileSidebar";
+import { useAuth } from "@/context/AuthContext";
+import { useQuery } from "@tanstack/react-query";
+import axios from "axios";
 import React from "react";
 
-export default function ChatDetailsPage() {
+export default function ChatDetailsPage({
+  params,
+}: {
+  params: { id: string };
+}) {
+  const chatId = params.id;
+
+  const { authTokens } = useAuth();
+  const { data, isPending } = useQuery({
+    queryKey: ["conversationDetails"],
+    queryFn: async () => {
+      const result = await axios.get(
+        `${process.env.NEXT_PUBLIC_BASE_URL}/api/conversations/details/${chatId}`,
+        {
+          headers: {
+            Authorization: `Bearer ${authTokens?.accessToken}`,
+          },
+        }
+      );
+      return result.data;
+    },
+  });
+
+  const conversation = data?.conversation;
+  const friend = data?.friend;
+
   return (
     <div>
       <div className="flex flex-row ">
@@ -11,13 +40,21 @@ export default function ChatDetailsPage() {
           <ChatList />
         </div>
 
-        {/**Chat room */}
         <div className="w-full h-screen ">
-          <ChatRoom />
-        </div>
+          {isPending ? (
+            <div className="flex flex-col h-screen items-center justify-center">
+              <span>Loading...</span>
+            </div>
+          ) : (
+            <div className="flex flex-row">
+              <div className="w-full h-screen ">
+                <ChatRoom friend={friend} chat={conversation} />
+              </div>
 
-        {/**Profile Sidebar */}
-        <ProfileSidebar />
+              <ProfileSidebar friend={friend} />
+            </div>
+          )}
+        </div>
       </div>
     </div>
   );

@@ -2,14 +2,18 @@
 import React, { useState } from "react";
 import { CiSearch } from "react-icons/ci";
 import { Avatar, AvatarImage } from "@/components/ui/avatar";
-import { useQuery } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useAuth } from "@/context/AuthContext";
 import axios from "axios";
+import { useRouter } from "next/navigation";
 
 export default function FriendsList() {
   const [searchTerm, setSearchTerm] = useState("");
 
   const { authTokens } = useAuth();
+  const router = useRouter();
+  const queryClient = useQueryClient();
+
   const { data } = useQuery({
     queryKey: ["friendsList"],
     queryFn: async () => {
@@ -25,11 +29,37 @@ export default function FriendsList() {
     },
   });
 
+  const { data: conversation, mutate } = useMutation({
+    mutationFn: async (friendId: { friendId: string }) => {
+      const result = await axios.post(
+        `${process.env.NEXT_PUBLIC_BASE_URL}/api/conversations/search`,
+        friendId,
+        {
+          headers: {
+            Authorization: `Bearer ${authTokens?.accessToken}`,
+          },
+        }
+      );
+      return result.data;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["conversations"] });
+    },
+  });
+
   const myFriends = data?.friends;
+  const chatId = conversation?.id;
 
   const filteredFriends = myFriends?.filter((friend: any) =>
     friend.fullName.toLowerCase().includes(searchTerm.toLowerCase())
   );
+
+  const handleStartChat = (friendId: string) => {
+    mutate({ friendId });
+    console.log("ChatId:", chatId);
+
+    router.push(`/chats/${chatId}`);
+  };
   return (
     <div className="max-h-screen bg-primary">
       <div className="h-full overflow-y-auto custom-scrollbar w-full ">
@@ -55,11 +85,12 @@ export default function FriendsList() {
             <div
               key={friend?.id}
               className="flex flex-row items-center space-x-4 my-1 py-2 px-6 cursor-pointer hover:bg-indigo-100"
+              onClick={() => handleStartChat(friend?.id)}
             >
               <div>
                 <Avatar className="h-[42px] w-[42px] border border-gray-200">
                   <AvatarImage
-                    src={friend.imageUrl || "/default-profile.jpg"}
+                    src={friend?.imageUrl || "/default-profile.jpg"}
                   />
                 </Avatar>
               </div>

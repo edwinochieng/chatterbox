@@ -4,6 +4,7 @@ import cors from "cors";
 import authRoutes from "./routes/authRoutes";
 import userRoutes from "./routes/userRoutes";
 import friendRoutes from "./routes/friendRoutes";
+import conversationRoutes from "./routes/conversationRoutes";
 
 dotenv.config();
 
@@ -17,6 +18,7 @@ app.use(cors());
 app.use("/auth", authRoutes);
 app.use("/api/user", userRoutes);
 app.use("/api/friends", friendRoutes);
+app.use("/api/conversations", conversationRoutes);
 
 app.use((err: Error, req: Request, res: Response, next: NextFunction) => {
   res.status(500).json({ message: "Something went wrong", error: err.message });

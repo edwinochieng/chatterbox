@@ -3,7 +3,7 @@ import React, { useState } from "react";
 import TextareaAutosize from "react-textarea-autosize";
 import { BsFillSendFill } from "react-icons/bs";
 
-export default function TextInput() {
+export default function TextInput({ chatId }: { chatId: string }) {
   const [message, setMessage] = useState("");
   return (
     <div className="flex items-center border rounded-2xl py-2 px-4">
