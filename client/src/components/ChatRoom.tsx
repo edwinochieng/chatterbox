@@ -1,8 +1,10 @@
 "use client";
-import React from "react";
+import React, { useEffect, useState, useRef } from "react";
 import TextInput from "./TextInput";
 import ChatNavbar from "./ChatNavbar";
 import { useAuth } from "@/context/AuthContext";
+import { useSocket } from "@/context/SocketContext";
+import useTabActivity from "@/hooks/useTabActivity";
 import {
   formatDateWithOrdinal,
   formatTimeToHoursAndMinutes,
@@ -10,30 +12,45 @@ import {
 
 export default function ChatRoom({ chat, friend }: any) {
   const { user } = useAuth();
+  const socket = useSocket();
+  const messagesEndRef = useRef<HTMLDivElement | null>(null);
   const userId = user?.userId;
+  const friendId = friend?.id;
 
-  let lastDate = "";
+  useTabActivity();
+
+  // Scroll to the bottom of the chat messages
+  const scrollToBottom = () => {
+    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+  };
+
+  let lastDate: any;
+
   return (
     <div>
-      <div className="flex flex-col h-screen  ">
+      <div className="flex flex-col h-screen">
         {/* Chat Navbar */}
-        <ChatNavbar friend={friend} />
+        <ChatNavbar friend={friend} friendId={friendId} />
 
         {/* Chat Messages */}
         <div className="flex-1 overflow-y-auto hidden-scrollbar xl:custom-scrollbar p-4 lg:p-12 space-y-2">
-          {chat?.messages.map((message: any) => {
-            const showDate = message.createdAt !== lastDate;
-            lastDate = message.createdAt;
+          {chat?.messages.map((message: any, index: number) => {
+            const showDate =
+              formatDateWithOrdinal(message.createdAt) !== lastDate;
+            lastDate = formatDateWithOrdinal(message.createdAt);
+
             return (
               <div key={message.id}>
                 {showDate && (
                   <div className="text-center text-gray-500 my-2">
-                    {formatDateWithOrdinal(message.createdAt)}
+                    {lastDate}
                   </div>
                 )}
                 <div
                   className={`flex ${
-                    message.sender === userId ? "justify-end" : "justify-start"
+                    message.senderId === userId
+                      ? "justify-end"
+                      : "justify-start"
                   }`}
                 >
                   <div
@@ -44,7 +61,8 @@ export default function ChatRoom({ chat, friend }: any) {
                     }`}
                   >
                     <p className="text-lg font-medium">{message.content}</p>
-                    <div className="ml-auto">
+
+                    <div className="ml-auto flex items-center">
                       <span className="text-sm">
                         {formatTimeToHoursAndMinutes(message.createdAt)}
                       </span>
@@ -54,7 +72,11 @@ export default function ChatRoom({ chat, friend }: any) {
               </div>
             );
           })}
+          <div ref={messagesEndRef} />{" "}
+          {/* This ensures we scroll to the last message */}
         </div>
+
+        {/* Add Typing Indicator */}
 
         {/* Text Input */}
         <div className="bg-white px-12 py-4">

@@ -34,9 +34,21 @@ export default function Chat({
         </div>
 
         <div className="flex flex-row items-center justify-between ">
-          <p className="text-sm text-gray-700 max-w-full">
-            {lastMessage?.content}
-          </p>
+          <div>
+            <p className="text-sm text-gray-700 max-w-full">
+              {lastMessage?.content}
+            </p>
+          </div>
+
+          <div>
+            {unreadMessagesCount > 0 && (
+              <div className="relative inline-flex items-center justify-center w-6 h-6 bg-red-500 text-white rounded-full">
+                <span className="text-[10px] font-semibold">
+                  {unreadMessagesCount}
+                </span>
+              </div>
+            )}
+          </div>
         </div>
       </div>
     </div>

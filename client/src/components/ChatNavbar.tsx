@@ -1,9 +1,32 @@
 "use client";
 
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { Avatar, AvatarImage } from "@/components/ui/avatar";
+import { useSocket } from "@/context/SocketContext";
 
-export default function ChatNavbar({ friend }: any) {
+export default function ChatNavbar({ friend, friendId }: any) {
+  const [isFriendOnline, setIsFriendOnline] = useState(false);
+  const socket = useSocket();
+
+  useEffect(() => {
+    socket?.emit("checkFriendStatus", friendId);
+
+    const handleUserStatusUpdate = (data: {
+      userId: string;
+      isOnline: boolean;
+    }) => {
+      if (data.userId === friendId) {
+        setIsFriendOnline(data.isOnline);
+      }
+    };
+
+    socket?.on("userStatusUpdated", handleUserStatusUpdate);
+
+    return () => {
+      socket?.off("userStatusUpdated", handleUserStatusUpdate);
+    };
+  }, [socket, friendId]);
+
   return (
     <div className="py-4 px-4 lg:px-12 bg-primary border border-t-transparent border-x-transparent">
       <div className="flex flex-row justify-between">
@@ -13,7 +36,13 @@ export default function ChatNavbar({ friend }: any) {
           </Avatar>
           <div className="flex flex-col">
             <span className="font-semibold text-2xl">{friend?.fullName}</span>
-            <span className="text-base font-medium text-green-500">Online</span>
+            <span className="text-base font-medium ">
+              {isFriendOnline ? (
+                <p className="text-green-500">Online</p>
+              ) : (
+                <p className="text-gray-700">Offline</p>
+              )}
+            </span>
           </div>
         </div>
         <div></div>

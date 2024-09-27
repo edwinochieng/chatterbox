@@ -22,7 +22,7 @@
     }
   },
   "include": [
-    "types.d.ts",
+    "./src/types",
     "next-env.d.ts",
     "**/*.ts",
     "**/*.tsx",

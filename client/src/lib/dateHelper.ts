@@ -1,5 +1,10 @@
-export function formatDateWithOrdinal(date: Date): string {
+export function formatDateWithOrdinal(dateInput: Date | string) {
+  const date = new Date(dateInput);
   const day = date.getDate();
+  const now = new Date();
+  const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+  const yesterday = new Date(today);
+  yesterday.setDate(today.getDate() - 1);
   const month = date.toLocaleString("default", { month: "long" });
   const year = date.getFullYear();
 
@@ -9,10 +14,19 @@ export function formatDateWithOrdinal(date: Date): string {
     return s[(v - 20) % 10] || s[v] || s[0];
   };
 
-  return `${day}${ordinalSuffix(day)} ${month} ${year}`;
+  if (date) {
+    if (date >= today) {
+      return "Today";
+    } else if (date >= yesterday && date < today) {
+      return "Yesterday";
+    } else {
+      return `${day}${ordinalSuffix(day)} ${month} ${year}`;
+    }
+  }
 }
 
-export function formatDateForMessages(date: Date) {
+export function formatDateForMessages(dateInput: Date | string) {
+  const date = new Date(dateInput);
   const now = new Date();
   const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
   const yesterday = new Date(today);
@@ -38,7 +52,8 @@ export function formatDateForMessages(date: Date) {
   }
 }
 
-export function formatTimeToHoursAndMinutes(date: Date): string {
+export function formatTimeToHoursAndMinutes(dateInput: Date | string): string {
+  const date = new Date(dateInput);
   return date
     .toLocaleTimeString("default", {
       hour: "2-digit",

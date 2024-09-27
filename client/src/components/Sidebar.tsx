@@ -9,6 +9,8 @@ import { MdLogout } from "react-icons/md";
 import { usePathname } from "next/navigation";
 import { useAuth } from "@/context/AuthContext";
 import { useRouter } from "next/navigation";
+import { useSocket } from "@/context/SocketContext";
+import { Socket } from "socket.io-client";
 
 const sidebarLinks = [
   {
@@ -39,9 +41,16 @@ export default function Sidebar() {
   const [isOpen, setIsOpen] = useState(false);
   const pathname = usePathname();
   const { user, logout } = useAuth();
+  const socket = useSocket() as Socket & {
+    handshake: { query: { userId: string } };
+  };
   const router = useRouter();
 
   const handleLogOut = () => {
+    if (socket) {
+      socket.emit("userOffline", { userId: socket.handshake?.query.userId });
+      socket.disconnect();
+    }
     logout();
     router.push("/login");
   };
