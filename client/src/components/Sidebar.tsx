@@ -11,6 +11,17 @@ import { useAuth } from "@/context/AuthContext";
 import { useRouter } from "next/navigation";
 import { useSocket } from "@/context/SocketContext";
 import { Socket } from "socket.io-client";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+  DialogFooter,
+  DialogClose,
+} from "@/components/ui/dialog";
+import { Button } from "@/components/ui/button";
 
 const sidebarLinks = [
   {
@@ -91,15 +102,37 @@ export default function Sidebar() {
               </li>
             ))}
           </ul>
-          <ul className="absolute bottom-8 w-full">
-            <li
-              onClick={handleLogOut}
-              className="flex items-center space-x-4 py-4 px-2 hover:bg-indigo-100 rounded-[6px] font-semibold cursor-pointer"
-            >
-              <MdLogout size={24} />
-              {isOpen && <span className="text-lg">Log out</span>}
-            </li>
-          </ul>
+          <div className="absolute bottom-8 w-full">
+            <Dialog>
+              <DialogTrigger>
+                <div className="flex items-center space-x-4 py-4 px-2 hover:bg-indigo-100 rounded-[6px] font-semibold cursor-pointer">
+                  <MdLogout size={24} />
+                  {isOpen && <span className="text-lg">Log out</span>}
+                </div>
+              </DialogTrigger>
+              <DialogContent className="bg-white shadow-2xl">
+                <DialogHeader>
+                  <DialogTitle onClick={handleLogOut}>
+                    Are you absolutely sure?
+                  </DialogTitle>
+                  <DialogDescription>
+                    Logging out will temporarily hide chat history. To see it
+                    again, log back in.
+                  </DialogDescription>
+                </DialogHeader>
+                <DialogFooter>
+                  <DialogClose asChild>
+                    <Button type="button" variant="secondary">
+                      Close
+                    </Button>
+                  </DialogClose>
+                  <Button type="button" onClick={handleLogOut}>
+                    Log out
+                  </Button>
+                </DialogFooter>
+              </DialogContent>
+            </Dialog>
+          </div>
         </div>
       </div>
     </div>
