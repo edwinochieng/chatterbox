@@ -6,10 +6,12 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import axios from "axios";
 import FriendRequests from "./FriendRequests";
 import { useAuth } from "@/context/AuthContext";
+import UserSkeleton from "./UserSkeleton";
 
 export default function AddFriends() {
   const [searchTerm, setSearchTerm] = useState("");
   const [searchResult, setSearchResult] = useState<any | null>(null);
+  const [isSearching, setIsSearching] = useState(false);
   const [hasSearched, setHasSearched] = useState(false);
 
   const queryClient = useQueryClient();
@@ -17,7 +19,7 @@ export default function AddFriends() {
 
   const handleSearch = async (e: React.FormEvent) => {
     e.preventDefault();
-    setHasSearched(true);
+    setIsSearching(true);
     setSearchResult(null);
 
     if (searchTerm) {
@@ -35,6 +37,8 @@ export default function AddFriends() {
         setSearchResult(null);
       }
     }
+    setIsSearching(false);
+    setHasSearched(true);
   };
 
   const sendRequest = useMutation({
@@ -87,49 +91,58 @@ export default function AddFriends() {
         <div className="mt-4">
           {/**Search Result */}
 
-          {searchResult ? (
-            <div className="flex flex-row justify-between items-center my-1 py-2 px-6 ">
-              <div className="flex flex-row items-center space-x-4 ">
-                <div>
-                  <Avatar className="h-[48px] w-[48px] border border-gray-200">
-                    <AvatarImage
-                      src={
-                        searchResult.profilePicture || "/default-profile.jpg"
-                      }
-                    />
-                  </Avatar>
-                </div>
-                <div className="flex flex-col">
-                  <span className="text-gray-800 font-semibold text-lg">
-                    {searchResult.fullName}
-                  </span>
-                  <span className="text-gray-700 font-medium text-base">
-                    {searchResult.email}
-                  </span>
-                </div>
-              </div>
-              {searchResult.id !== user?.userId && (
-                <div className="ml-auto">
-                  {searchResult.isRequested ? (
-                    <span className="text-gray-500">Requested</span>
-                  ) : (
-                    <button
-                      onClick={() => handleSendRequest(searchResult.id)}
-                      className="px-4 py-2 text-white bg-blue-600 rounded-lg"
-                      disabled={sendRequest.isPending}
-                    >
-                      {sendRequest.isPending ? "Adding..." : "Add"}
-                    </button>
-                  )}
-                </div>
-              )}
+          {isSearching ? (
+            <div className="px-6">
+              <UserSkeleton />
             </div>
           ) : (
-            hasSearched && (
-              <div className="mt-4">
-                <p className="text-center">No user found</p>
-              </div>
-            )
+            <div>
+              {searchResult ? (
+                <div className="flex flex-row justify-between items-center my-1 py-2 px-6 ">
+                  <div className="flex flex-row items-center space-x-4 ">
+                    <div>
+                      <Avatar className="h-[48px] w-[48px] border border-gray-200">
+                        <AvatarImage
+                          src={
+                            searchResult.profilePicture ||
+                            "/default-profile.jpg"
+                          }
+                        />
+                      </Avatar>
+                    </div>
+                    <div className="flex flex-col">
+                      <span className="text-gray-800 font-semibold text-lg">
+                        {searchResult.fullName}
+                      </span>
+                      <span className="text-gray-700 font-medium text-base">
+                        {searchResult.email}
+                      </span>
+                    </div>
+                  </div>
+                  {searchResult.id !== user?.userId && (
+                    <div className="ml-auto">
+                      {searchResult.isRequested ? (
+                        <span className="text-gray-500">Requested</span>
+                      ) : (
+                        <button
+                          onClick={() => handleSendRequest(searchResult.id)}
+                          className="px-4 py-2 text-white bg-blue-600 rounded-lg"
+                          disabled={sendRequest.isPending}
+                        >
+                          {sendRequest.isPending ? "Adding..." : "Add"}
+                        </button>
+                      )}
+                    </div>
+                  )}
+                </div>
+              ) : (
+                hasSearched && (
+                  <div className="mt-4">
+                    <p className="text-center">No user found</p>
+                  </div>
+                )
+              )}
+            </div>
           )}
 
           {/** Friend Requests */}
