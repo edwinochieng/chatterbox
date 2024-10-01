@@ -6,6 +6,7 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useAuth } from "@/context/AuthContext";
 import axios from "axios";
 import { useRouter } from "next/navigation";
+import UserSkeleton from "./UserSkeleton";
 
 export default function FriendsList() {
   const [searchTerm, setSearchTerm] = useState("");
@@ -14,7 +15,7 @@ export default function FriendsList() {
   const router = useRouter();
   const queryClient = useQueryClient();
 
-  const { data } = useQuery({
+  const { data, isLoading } = useQuery({
     queryKey: ["friendsList"],
     queryFn: async () => {
       const result = await axios.get(
@@ -81,26 +82,38 @@ export default function FriendsList() {
         </div>
 
         <div className="mt-4">
-          {filteredFriends?.map((friend: any) => (
-            <div
-              key={friend?.id}
-              className="flex flex-row items-center space-x-4 my-1 py-2 px-6 cursor-pointer hover:bg-indigo-100"
-              onClick={() => handleStartChat(friend?.id)}
-            >
-              <div>
-                <Avatar className="h-[42px] w-[42px] border border-gray-200">
-                  <AvatarImage
-                    src={friend?.imageUrl || "/default-profile.jpg"}
-                  />
-                </Avatar>
-              </div>
-              <div>
-                <span className="text-gray-800 font-semibold text-xl">
-                  {friend?.fullName}
-                </span>
-              </div>
+          {isLoading ? (
+            <div>
+              {Array.from({ length: 10 }).map((_, index) => (
+                <div className="px-6 my-3 py-2" key={index}>
+                  <UserSkeleton />
+                </div>
+              ))}
             </div>
-          ))}
+          ) : (
+            <div>
+              {filteredFriends?.map((friend: any) => (
+                <div
+                  key={friend?.id}
+                  className="flex flex-row items-center space-x-4 my-1 py-2 px-6 cursor-pointer hover:bg-indigo-100"
+                  onClick={() => handleStartChat(friend?.id)}
+                >
+                  <div>
+                    <Avatar className="h-[42px] w-[42px] border border-gray-200">
+                      <AvatarImage
+                        src={friend?.imageUrl || "/default-profile.jpg"}
+                      />
+                    </Avatar>
+                  </div>
+                  <div>
+                    <span className="text-gray-800 font-semibold text-xl">
+                      {friend?.fullName}
+                    </span>
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
         </div>
       </div>
     </div>
