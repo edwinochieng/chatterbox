@@ -2,9 +2,7 @@ import { Server, Socket } from "socket.io";
 import prisma from "../prisma/client";
 
 export const sendMessageHandler = (io: Server, socket: Socket) => {
-  socket.on("sendMessage", async (data) => {
-    const { chatId, senderId, content } = data;
-
+  socket.on("sendMessage", async ({ senderId, content, chatId }) => {
     try {
       // Save message in database
       const message = await prisma.message.create({

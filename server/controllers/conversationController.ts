@@ -42,10 +42,13 @@ export const searchConversation = async (req: Request, res: Response) => {
       .json({ message: "Error creating or retrieving conversation" });
   }
 };
-
 export const getConversationDetails = async (req: Request, res: Response) => {
   const { conversationId } = req.params;
   const userId = req.userId;
+
+  if (!userId) {
+    return res.status(400).json({ message: "User ID is required" });
+  }
 
   try {
     const conversation = await prisma.conversation.findUnique({
@@ -66,7 +69,11 @@ export const getConversationDetails = async (req: Request, res: Response) => {
             },
           },
         },
-        messages: true,
+        messages: {
+          include: {
+            readReceipts: true,
+          },
+        },
       },
     });
 
@@ -78,8 +85,29 @@ export const getConversationDetails = async (req: Request, res: Response) => {
       (member) => member.user.id !== userId
     )?.user;
 
+    const messagesWithSeenStatus = conversation.messages.map((message) => {
+      const seenByUserIds = message.readReceipts.map(
+        (receipt) => receipt.userId
+      );
+
+      if (message.senderId === userId) {
+        return {
+          ...message,
+          seen: seenByUserIds.includes(friend!.id),
+        };
+      } else {
+        return {
+          ...message,
+          seen: seenByUserIds.includes(userId),
+        };
+      }
+    });
+
     return res.status(200).json({
-      conversation,
+      conversation: {
+        ...conversation,
+        messages: messagesWithSeenStatus,
+      },
       friend,
       message: "Conversation details fetched successfully",
     });
@@ -123,7 +151,7 @@ export const getAllConversations = async (req: Request, res: Response) => {
         },
         _count: {
           select: {
-            messages: true, // Total messages count for the convo
+            messages: true,
           },
         },
       },

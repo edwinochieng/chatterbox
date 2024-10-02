@@ -9,6 +9,7 @@ import friendRoutes from "./routes/friendRoutes";
 import conversationRoutes from "./routes/conversationRoutes";
 import { sendMessageHandler } from "./sockets/sendMessage";
 import { onlineStatusHandler } from "./sockets/onlineStatus";
+import { seenMessageHandler } from "./sockets/seenMessage";
 
 dotenv.config();
 
@@ -44,6 +45,7 @@ io.on("connection", (socket) => {
   }
 
   sendMessageHandler(io, socket);
+  seenMessageHandler(io, socket);
   onlineStatusHandler(io, socket);
 });
 

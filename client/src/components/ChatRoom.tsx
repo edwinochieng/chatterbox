@@ -9,22 +9,45 @@ import {
   formatDateWithOrdinal,
   formatTimeToHoursAndMinutes,
 } from "@/lib/dateHelper";
+import { useQueryClient } from "@tanstack/react-query";
 
 export default function ChatRoom({ chat, friend }: any) {
   const { user } = useAuth();
   const socket = useSocket();
+  const queryClient = useQueryClient();
   const messagesEndRef = useRef<HTMLDivElement | null>(null);
   const userId = user?.userId;
   const friendId = friend?.id;
+  const chatId = chat?.id;
 
   useTabActivity();
 
-  // Scroll to the bottom of the chat messages
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   };
 
   let lastDate: any;
+
+  useEffect(() => {
+    if (chat?.messages.length) {
+      chat.messages.forEach((message: any) => {
+        if (message.senderId !== userId) {
+          socket?.emit("messageSeen", {
+            chatId,
+            messageId: message.id,
+            userId,
+          });
+        }
+      });
+    }
+    queryClient.invalidateQueries({
+      queryKey: ["conversationDetails", "conversations"],
+    });
+
+    scrollToBottom();
+  }, [chat, chatId, userId, socket, queryClient]);
+
+  console.log(chat.messages);
 
   return (
     <div>
@@ -66,6 +89,21 @@ export default function ChatRoom({ chat, friend }: any) {
                       <span className="text-sm">
                         {formatTimeToHoursAndMinutes(message.createdAt)}
                       </span>
+
+                      {/* Seen UI text */}
+                      {message.senderId === userId && (
+                        <span>
+                          {message.seen ? (
+                            <span className="text-xs text-gray-500 ml-2">
+                              Seen
+                            </span>
+                          ) : (
+                            <span className="text-xs text-gray-500 ml-2">
+                              Delivered
+                            </span>
+                          )}
+                        </span>
+                      )}
                     </div>
                   </div>
                 </div>
@@ -80,7 +118,7 @@ export default function ChatRoom({ chat, friend }: any) {
 
         {/* Text Input */}
         <div className="bg-white px-12 py-4">
-          <TextInput chatId={chat?.id} />
+          <TextInput chatId={chatId} />
         </div>
       </div>
     </div>
