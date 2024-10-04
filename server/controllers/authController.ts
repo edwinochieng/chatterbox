@@ -91,9 +91,13 @@ export const refreshAccessToken = (req: Request, res: Response) => {
       refreshToken,
       process.env.JWT_REFRESH_SECRET as string
     ) as { userId: string };
-    const newAccessToken = createAccessToken(decoded.userId);
 
-    return res.status(200).json({ accessToken: newAccessToken });
+    const newAccessToken = createAccessToken(decoded.userId);
+    const newRefreshToken = createRefreshToken(decoded.userId);
+
+    return res
+      .status(200)
+      .json({ accessToken: newAccessToken, refreshToken: newRefreshToken });
   } catch (err) {
     return res.status(403).json({ msg: "Invalid refresh token" });
   }

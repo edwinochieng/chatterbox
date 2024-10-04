@@ -1,4 +1,5 @@
 import React, { createContext, useState, useEffect, useContext } from "react";
+import axios from "axios";
 
 interface AuthTokens {
   accessToken: string;
@@ -7,6 +8,7 @@ interface AuthTokens {
 
 interface User {
   userId: string;
+  exp: number;
 }
 
 interface AuthContextType {
@@ -37,12 +39,55 @@ export const AuthProvider = ({
     localStorage.setItem("authTokens", JSON.stringify(tokens));
     const decodedUser = decodeToken(tokens.accessToken);
     setUser(decodedUser);
+
+    scheduleTokenRefresh(tokens.accessToken);
   };
 
   const logout = () => {
     setAuthTokens(null);
     setUser(null);
     localStorage.removeItem("authTokens");
+    clearTimeout(refreshTimeoutId);
+  };
+
+  let refreshTimeoutId: NodeJS.Timeout;
+
+  const scheduleTokenRefresh = (accessToken: string) => {
+    const decoded = decodeToken(accessToken);
+    const expiresIn = decoded.exp * 1000 - Date.now() - 60000; // Refresh 1 minute before expiry
+    refreshTimeoutId = setTimeout(refreshToken, expiresIn);
+  };
+
+  const refreshToken = async () => {
+    try {
+      const storedTokens = localStorage.getItem("authTokens");
+      if (!storedTokens) return;
+
+      const tokens: AuthTokens = JSON.parse(storedTokens);
+
+      const { data } = await axios.post(
+        `${process.env.NEXT_PUBLIC_BASE_URL}/auth/refresh-token`,
+        {
+          refreshToken: tokens.refreshToken,
+        }
+      );
+
+      const newTokens = {
+        accessToken: data.accessToken,
+        refreshToken: tokens.refreshToken,
+      };
+
+      setAuthTokens(newTokens);
+      localStorage.setItem("authTokens", JSON.stringify(newTokens));
+
+      const decodedUser = decodeToken(newTokens.accessToken);
+      setUser(decodedUser);
+
+      scheduleTokenRefresh(newTokens.accessToken);
+    } catch (error) {
+      console.error("Failed to refresh token", error);
+      logout();
+    }
   };
 
   useEffect(() => {
@@ -52,7 +97,11 @@ export const AuthProvider = ({
       setAuthTokens(tokens);
       const decodedUser = decodeToken(tokens.accessToken);
       setUser(decodedUser);
+
+      scheduleTokenRefresh(tokens.accessToken);
     }
+
+    return () => clearTimeout(refreshTimeoutId);
   }, []);
 
   const isAuthenticated = !!authTokens;
