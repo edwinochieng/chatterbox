@@ -1,17 +1,20 @@
 "use client";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { CiSearch } from "react-icons/ci";
 import Chat from "./Chat";
 import { useAuth } from "@/context/AuthContext";
 import { useQuery } from "@tanstack/react-query";
 import axios from "axios";
 import UserSkeleton from "./UserSkeleton";
+import { useChat } from "@/context/ChatContext";
 
 export default function ChatList() {
   const [searchTerm, setSearchTerm] = useState("");
 
   const { authTokens } = useAuth();
-  const { data, isLoading } = useQuery({
+  const { chats, setChats } = useChat();
+
+  const { data, isLoading, isSuccess } = useQuery({
     queryKey: ["conversations"],
     queryFn: async () => {
       const result = await axios.get(
@@ -26,7 +29,11 @@ export default function ChatList() {
     },
   });
 
-  const chats = data?.conversations;
+  useEffect(() => {
+    if (isSuccess && data?.conversations) {
+      setChats(data.conversations);
+    }
+  }, [isSuccess, data?.conversations, setChats]);
 
   const filteredChats = chats?.filter((chat: any) =>
     chat.friend.fullName.toLowerCase().includes(searchTerm.toLowerCase())

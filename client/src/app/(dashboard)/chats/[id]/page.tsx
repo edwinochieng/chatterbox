@@ -3,9 +3,10 @@ import ChatList from "@/components/ChatList";
 import ChatRoom from "@/components/ChatRoom";
 import ProfileSidebar from "@/components/ProfileSidebar";
 import { useAuth } from "@/context/AuthContext";
+import { useSocket } from "@/context/SocketContext";
 import { useQuery } from "@tanstack/react-query";
 import axios from "axios";
-import React from "react";
+import React, { useEffect } from "react";
 
 export default function ChatDetailsPage({
   params,
@@ -15,6 +16,22 @@ export default function ChatDetailsPage({
   const chatId = params.id;
 
   const { authTokens } = useAuth();
+  const socket = useSocket();
+
+  useEffect(() => {
+    return () => {
+      if (socket && chatId) {
+        socket.emit("leaveRoom", { chatId });
+      }
+    };
+  }, [socket, chatId]);
+
+  useEffect(() => {
+    if (socket && chatId) {
+      socket.emit("joinRoom", { chatId });
+    }
+  }, [socket, chatId]);
+
   const { data, isPending } = useQuery({
     queryKey: ["conversationDetails"],
     queryFn: async () => {

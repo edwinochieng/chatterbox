@@ -9,12 +9,14 @@ import {
   formatDateWithOrdinal,
   formatTimeToHoursAndMinutes,
 } from "@/lib/dateHelper";
-import { useQueryClient } from "@tanstack/react-query";
+import { useChat } from "@/context/ChatContext";
 
 export default function ChatRoom({ chat, friend }: any) {
   const { user } = useAuth();
+  const [messages, setMessages] = useState(chat?.messages);
   const socket = useSocket();
-  const queryClient = useQueryClient();
+  const { resetUnreadMessagesCount, updateChats } = useChat();
+
   const messagesEndRef = useRef<HTMLDivElement | null>(null);
   const userId = user?.userId;
   const friendId = friend?.id;
@@ -29,10 +31,21 @@ export default function ChatRoom({ chat, friend }: any) {
   let lastDate: any;
 
   useEffect(() => {
-    if (chat?.messages.length) {
-      chat.messages.forEach((message: any) => {
+    socket?.on("messageReceived", (newMessage) => {
+      setMessages((prevMessages: any) => [...prevMessages, newMessage]);
+      updateChats(newMessage.content, chatId);
+    });
+
+    return () => {
+      socket?.off("messageReceived");
+    };
+  }, [socket, updateChats, chatId]);
+
+  useEffect(() => {
+    if (messages.length) {
+      messages.forEach((message: any) => {
         if (message.senderId !== userId) {
-          socket?.emit("messageSeen", {
+          socket?.emit("seeMessage", {
             chatId,
             messageId: message.id,
             userId,
@@ -40,14 +53,25 @@ export default function ChatRoom({ chat, friend }: any) {
         }
       });
     }
-    queryClient.invalidateQueries({
-      queryKey: ["conversationDetails", "conversations"],
-    });
 
     scrollToBottom();
-  }, [chat, chatId, userId, socket, queryClient]);
+  }, [messages, chatId, userId, socket]);
 
-  console.log(chat.messages);
+  useEffect(() => {
+    // Listen for message seen updates
+    socket?.on("messageSeen", ({ messageId }) => {
+      setMessages((prevMessages: any) =>
+        prevMessages.map((message: any) =>
+          message.id === messageId ? { ...message, seen: true } : message
+        )
+      );
+      resetUnreadMessagesCount(chatId);
+    });
+
+    return () => {
+      socket?.off("messageSeen");
+    };
+  }, [socket, resetUnreadMessagesCount, chatId]);
 
   return (
     <div>
@@ -57,7 +81,7 @@ export default function ChatRoom({ chat, friend }: any) {
 
         {/* Chat Messages */}
         <div className="flex-1 overflow-y-auto hidden-scrollbar xl:custom-scrollbar p-4 lg:p-12 space-y-2">
-          {chat?.messages.map((message: any, index: number) => {
+          {messages.map((message: any) => {
             const showDate =
               formatDateWithOrdinal(message.createdAt) !== lastDate;
             lastDate = formatDateWithOrdinal(message.createdAt);
@@ -90,7 +114,7 @@ export default function ChatRoom({ chat, friend }: any) {
                         {formatTimeToHoursAndMinutes(message.createdAt)}
                       </span>
 
-                      {/* Seen UI text */}
+                      {/* Seen/Delivered status */}
                       {message.senderId === userId && (
                         <span>
                           {message.seen ? (
@@ -111,10 +135,8 @@ export default function ChatRoom({ chat, friend }: any) {
             );
           })}
           <div ref={messagesEndRef} />{" "}
-          {/* This ensures we scroll to the last message */}
+          {/* Ensure scrolling to the last message */}
         </div>
-
-        {/* Add Typing Indicator */}
 
         {/* Text Input */}
         <div className="bg-white px-12 py-4">

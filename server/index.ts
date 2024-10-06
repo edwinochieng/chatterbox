@@ -10,6 +10,7 @@ import conversationRoutes from "./routes/conversationRoutes";
 import { sendMessageHandler } from "./sockets/sendMessage";
 import { onlineStatusHandler } from "./sockets/onlineStatus";
 import { seenMessageHandler } from "./sockets/seenMessage";
+import { joinRoomHandler } from "./sockets/joinRoom";
 
 dotenv.config();
 
@@ -39,11 +40,7 @@ const io = new Server(server, {
 });
 
 io.on("connection", (socket) => {
-  const chatId = socket.handshake.query.chatId;
-  if (chatId) {
-    socket.join(chatId);
-  }
-
+  joinRoomHandler(socket);
   sendMessageHandler(io, socket);
   seenMessageHandler(io, socket);
   onlineStatusHandler(io, socket);

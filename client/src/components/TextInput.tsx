@@ -4,15 +4,12 @@ import TextareaAutosize from "react-textarea-autosize";
 import { BsFillSendFill } from "react-icons/bs";
 import { useAuth } from "@/context/AuthContext";
 import { useSocket } from "@/context/SocketContext";
-import { useQueryClient } from "@tanstack/react-query";
 
 export default function TextInput({ chatId }: { chatId: string }) {
   const [message, setMessage] = useState("");
-
   const { user } = useAuth();
   const senderId = user?.userId;
   const socket = useSocket();
-  const queryClient = useQueryClient();
 
   const sendMessage = () => {
     if (!message.trim() || !senderId) return;
@@ -22,9 +19,7 @@ export default function TextInput({ chatId }: { chatId: string }) {
       senderId,
       content: message,
     });
-    queryClient.invalidateQueries({
-      queryKey: ["conversationDetails", "conversations"],
-    });
+
     setMessage("");
   };
 
