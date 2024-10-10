@@ -19,33 +19,45 @@ import {
 import { toast } from "react-hot-toast";
 import React, { useRef } from "react";
 import MainNavbar from "@/components/MainNavbar";
-import { useMutation } from "@tanstack/react-query";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import axios from "axios";
+import { useAuth } from "@/context/AuthContext";
 
 const FormSchema = z.object({
   fullName: z.string(),
-  bio: z.string(),
+  bio: z.string().optional(),
 });
 
 export default function ProfileSettings() {
   const fileInputRef = useRef<HTMLInputElement | null>(null);
 
+  const { authTokens, currentUser, setCurrentUser } = useAuth();
+  const queryClient = useQueryClient();
+
   const form = useForm<z.infer<typeof FormSchema>>({
     resolver: zodResolver(FormSchema),
     defaultValues: {
-      fullName: "",
-      bio: "",
+      fullName: currentUser?.fullName,
+      bio: currentUser?.bio,
     },
   });
 
   const { mutate, isPending } = useMutation({
-    mutationFn: (data: z.infer<typeof FormSchema>) => {
-      return axios.put(
+    mutationFn: async (data: z.infer<typeof FormSchema>) => {
+      const result = await axios.put(
         `${process.env.NEXT_PUBLIC_BASE_URL}/api/user/profile-settings`,
-        data
+        data,
+        {
+          headers: {
+            Authorization: `Bearer ${authTokens?.accessToken}`,
+          },
+        }
       );
+      return result.data;
     },
-    onSuccess: () => {
+    onSuccess: (response) => {
+      queryClient.invalidateQueries({ queryKey: ["currentUser"] });
+      setCurrentUser(response?.user);
       toast.success("Profile details updated successfully!");
     },
     onError: (error: any) => {
@@ -92,7 +104,7 @@ export default function ProfileSettings() {
                   <FormItem>
                     <FormLabel>Name</FormLabel>
                     <FormControl>
-                      <Input placeholder="shadcn" {...field} />
+                      <Input placeholder="Your full name" {...field} />
                     </FormControl>
                     <FormDescription>
                       This is your public display name.

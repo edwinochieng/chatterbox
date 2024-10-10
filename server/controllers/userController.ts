@@ -1,38 +1,54 @@
 import { Request, Response } from "express";
 import bcrypt from "bcryptjs";
 import prisma from "../prisma/client";
-import { profile } from "console";
 
 export const updateProfileSettings = async (req: Request, res: Response) => {
-  const { fullName, bio } = req.body;
+  const data = req.body;
+  const { fullName, bio } = data;
   const userId = req.userId;
 
   try {
-    await prisma.user.update({
+    const updateData: any = { fullName };
+
+    if (bio !== undefined && bio !== "") {
+      updateData.bio = bio;
+    }
+
+    const updatedUser = await prisma.user.update({
       where: { id: userId },
-      data: { fullName, bio },
+      data: updateData,
     });
-    return res
-      .status(200)
-      .json({ message: "Profile settings updated successfully" });
+
+    return res.status(200).json({
+      user: updatedUser,
+      message: "Profile settings updated successfully",
+    });
   } catch (error) {
     return res.status(500).json({ message: "Error updating profile settings" });
   }
 };
 
 export const updateAccountSettings = async (req: Request, res: Response) => {
-  const { email, password } = req.body;
+  const data = req.body;
+  const { email, password } = data;
   const userId = req.userId;
 
   try {
-    const hashedPassword = await bcrypt.hash(password, 10);
-    await prisma.user.update({
+    const updateData: any = { email };
+
+    if (password !== undefined && password !== "") {
+      const hashedPassword = await bcrypt.hash(password, 10);
+      updateData.password = hashedPassword;
+    }
+
+    const updatedUser = await prisma.user.update({
       where: { id: userId },
-      data: { email, password: hashedPassword },
+      data: updateData,
     });
-    return res
-      .status(200)
-      .json({ message: "Account settings updated successfully" });
+    return res.status(200).json({
+      user: updatedUser,
+      message: "Account settings updated successfully",
+    });
   } catch (error) {
     return res.status(500).json({ message: "Error updating account settings" });
   }
@@ -43,13 +59,16 @@ export const updateProfilePicture = async (req: Request, res: Response) => {
   const userId = req.userId;
 
   try {
-    await prisma.user.update({
+    const updatedUser = await prisma.user.update({
       where: { id: userId },
       data: { imageUrl: profilePictureUrl },
     });
     return res
       .status(200)
-      .json({ message: "Profile picture updated successfully" });
+      .json({
+        user: updatedUser,
+        message: "Profile picture updated successfully",
+      });
   } catch (error) {
     return res.status(500).json({ message: "Error updating profile picture" });
   }
@@ -89,6 +108,30 @@ export const searchUserByEmail = async (req: Request, res: Response) => {
       profilePicture: user.imageUrl,
       isRequested: !!friendship,
     });
+  } catch (error) {
+    return res.status(500).json({ message: "Error searching for user" });
+  }
+};
+
+export const searchUserById = async (req: Request, res: Response) => {
+  const { userId } = req.query;
+
+  if (!userId) {
+    return res.status(400).json({ message: "UserId is required" });
+  }
+
+  try {
+    const user = await prisma.user.findUnique({
+      where: {
+        id: String(userId),
+      },
+    });
+
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+
+    return res.status(200).json(user);
   } catch (error) {
     return res.status(500).json({ message: "Error searching for user" });
   }

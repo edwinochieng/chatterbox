@@ -17,8 +17,9 @@ import {
 import { toast } from "react-hot-toast";
 import React from "react";
 import MainNavbar from "@/components/MainNavbar";
-import { useMutation } from "@tanstack/react-query";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import axios from "axios";
+import { useAuth } from "@/context/AuthContext";
 
 const FormSchema = z.object({
   email: z.string(),
@@ -26,22 +27,33 @@ const FormSchema = z.object({
 });
 
 export default function AccountSettings() {
+  const { authTokens, currentUser, setCurrentUser } = useAuth();
+  const queryClient = useQueryClient();
+
   const form = useForm<z.infer<typeof FormSchema>>({
     resolver: zodResolver(FormSchema),
     defaultValues: {
-      email: "",
+      email: currentUser?.email,
       password: "",
     },
   });
 
   const { mutate, isPending } = useMutation({
-    mutationFn: (data: z.infer<typeof FormSchema>) => {
-      return axios.put(
+    mutationFn: async (data: z.infer<typeof FormSchema>) => {
+      const result = await axios.put(
         `${process.env.NEXT_PUBLIC_BASE_URL}/api/user/account-settings`,
-        data
+        data,
+        {
+          headers: {
+            Authorization: `Bearer ${authTokens?.accessToken}`,
+          },
+        }
       );
+      return result.data;
     },
-    onSuccess: () => {
+    onSuccess: (response) => {
+      queryClient.invalidateQueries({ queryKey: ["currentUser"] });
+      setCurrentUser(response?.user);
       toast.success("Account details updated successfully!");
     },
     onError: (error: any) => {

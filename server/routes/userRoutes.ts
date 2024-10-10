@@ -4,10 +4,13 @@ import {
   updateProfileSettings,
   updateProfilePicture,
   searchUserByEmail,
+  searchUserById,
 } from "../controllers/userController";
 import { authMiddleware } from "../middleware/authMiddleware";
 
 const router = express.Router();
+
+router.get("/get-user", searchUserById);
 
 router.get("/search", authMiddleware, searchUserByEmail);
 
