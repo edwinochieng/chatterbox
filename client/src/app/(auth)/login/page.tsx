@@ -22,19 +22,22 @@ export default function LoginPage() {
     handleSubmit,
     formState: { errors },
   } = useForm<LoginInputs>();
-  const { login } = useAuth();
+  const { login, setCurrentUser } = useAuth();
 
   const { mutate, isPending } = useMutation({
-    mutationFn: (userData: LoginInputs) => {
-      return axios.post(
+    mutationFn: async (userData: LoginInputs) => {
+      const result = await axios.post(
         `${process.env.NEXT_PUBLIC_BASE_URL}/auth/login`,
         userData
       );
+      return result.data;
     },
     onSuccess: (response) => {
-      const tokens = response?.data;
-      if (tokens) {
+      const tokens = response?.tokens;
+      const user = response?.user;
+      if (tokens && user) {
         login(tokens);
+        setCurrentUser(user);
         router.push("/chats");
         toast.success("Logged in successfully!");
       }

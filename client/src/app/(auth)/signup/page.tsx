@@ -31,19 +31,22 @@ export default function SignUpPage() {
     getValues,
     formState: { errors },
   } = useForm<SignUpInputs>();
-  const { login } = useAuth();
+  const { login, setCurrentUser } = useAuth();
 
   const { mutate, isPending } = useMutation({
-    mutationFn: (newUser: UserData) => {
-      return axios.post(
+    mutationFn: async (newUser: UserData) => {
+      const result = await axios.post(
         `${process.env.NEXT_PUBLIC_BASE_URL}/auth/signup`,
         newUser
       );
+      return result.data;
     },
     onSuccess: (response) => {
-      const tokens = response?.data;
-      if (tokens) {
+      const tokens = response?.tokens;
+      const user = response?.user;
+      if (tokens && user) {
         login(tokens);
+        setCurrentUser(user);
         toast.success("Account created successfully!");
         router.push("/chats");
       }

@@ -11,12 +11,26 @@ interface User {
   exp: number;
 }
 
+interface CurrentUser {
+  id: string;
+  fullName: string;
+  email: string;
+  emailVerified: Date | null;
+  password: string;
+  imageUrl: string | null;
+  bio: string | undefined;
+  createdAt: Date;
+  updatedAt: Date;
+}
+
 interface AuthContextType {
   authTokens: AuthTokens | null;
   user: User | null;
   login: (tokens: AuthTokens) => void;
   logout: () => void;
   isAuthenticated: boolean;
+  currentUser: CurrentUser | null;
+  setCurrentUser: (user: CurrentUser) => void;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -28,6 +42,7 @@ export const AuthProvider = ({
 }>) => {
   const [authTokens, setAuthTokens] = useState<AuthTokens | null>(null);
   const [user, setUser] = useState<User | null>(null);
+  const [currentUser, setCurrentUser] = useState<CurrentUser | null>(null);
 
   const decodeToken = (token: string): User => {
     const payload = atob(token.split(".")[1]);
@@ -108,7 +123,15 @@ export const AuthProvider = ({
 
   return (
     <AuthContext.Provider
-      value={{ authTokens, user, login, logout, isAuthenticated }}
+      value={{
+        authTokens,
+        user,
+        login,
+        logout,
+        isAuthenticated,
+        currentUser,
+        setCurrentUser,
+      }}
     >
       {children}
     </AuthContext.Provider>
