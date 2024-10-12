@@ -1,28 +1,11 @@
 "use client";
 
 import MainNavbar from "@/components/MainNavbar";
-import { useEffect, useState } from "react";
+import { useTheme } from "@/context/ThemeContext";
+import { styles } from "@/lib/style";
 
 export default function AppearanceSettings() {
-  const [activeTheme, setActiveTheme] = useState("light");
-
-  useEffect(() => {
-    const theme = localStorage.getItem("theme");
-    if (theme === "dark") {
-      document.documentElement.classList.add("dark");
-    }
-  }, []);
-
-  const toggleLightMode = () => {
-    document.documentElement.classList.remove("dark");
-    localStorage.setItem("theme", "light");
-  };
-  const toggleDarkMode = () => {
-    document.documentElement.classList.add("dark");
-    localStorage.setItem("theme", "dark");
-    setActiveTheme("dark");
-  };
-
+  const { activeTheme, toggleDarkMode, toggleLightMode } = useTheme();
   return (
     <div>
       <MainNavbar
@@ -32,7 +15,9 @@ export default function AppearanceSettings() {
       <div className="pt-12">
         <div>
           <h1 className="font-semibold text-xl">Theme</h1>
-          <p>Select the theme for the dashboard.</p>
+          <p className={styles.description}>
+            Select the theme for the dashboard.
+          </p>
         </div>
 
         <div className="mt-8 flex flex-row space-x-3">
@@ -40,11 +25,13 @@ export default function AppearanceSettings() {
           <div>
             <div
               onClick={toggleLightMode}
-              className={`items-center cursor-pointer rounded-lg border-2  p-1  ${
-                activeTheme === "light" ? "border-gray-950" : "border-gray-50"
+              className={`items-center cursor-pointer rounded-xl border-[3px]  p-1  ${
+                activeTheme === "light"
+                  ? "border-gray-700"
+                  : "border-secondaryBg"
               }`}
             >
-              <div className="space-y-2 rounded-sm bg-[#ecedef] p-2">
+              <div className="space-y-2 rounded-[8px] bg-[#ecedef] p-2">
                 <div className="space-y-2 rounded-lg bg-white p-2 shadow-sm">
                   <div className="h-2 w-[80px] rounded-lg bg-[#ecedef]" />
                   <div className="h-2 w-[100px] rounded-lg bg-[#ecedef]" />
@@ -67,11 +54,11 @@ export default function AppearanceSettings() {
           <div>
             <div
               onClick={toggleDarkMode}
-              className={`items-center cursor-pointer rounded-lg border-2  p-1  ${
-                activeTheme === "dark" ? "border-gray-950 " : "border-gray-50"
+              className={`items-center cursor-pointer rounded-xl border-[3px]  p-1  ${
+                activeTheme === "dark" ? "border-gray-100 " : "border-primaryBg"
               }`}
             >
-              <div className="space-y-2 rounded-sm bg-slate-950 p-2">
+              <div className="space-y-2 rounded-[8px] bg-slate-950 p-2">
                 <div className="space-y-2 rounded-lg bg-slate-800 p-2 shadow-sm">
                   <div className="h-2 w-[80px] rounded-lg bg-slate-400" />
                   <div className="h-2 w-[100px] rounded-lg bg-slate-400" />
