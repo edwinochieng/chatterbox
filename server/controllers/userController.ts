@@ -63,12 +63,10 @@ export const updateProfilePicture = async (req: Request, res: Response) => {
       where: { id: userId },
       data: { imageUrl: profilePictureUrl },
     });
-    return res
-      .status(200)
-      .json({
-        user: updatedUser,
-        message: "Profile picture updated successfully",
-      });
+    return res.status(200).json({
+      user: updatedUser,
+      message: "Profile picture updated successfully",
+    });
   } catch (error) {
     return res.status(500).json({ message: "Error updating profile picture" });
   }
@@ -93,7 +91,17 @@ export const searchUserByEmail = async (req: Request, res: Response) => {
       return res.status(404).json({ message: "User not found" });
     }
 
-    const friendship = await prisma.friendship.findFirst({
+    const existingFriendship = await prisma.friendship.findFirst({
+      where: {
+        OR: [
+          { requesterId: userId, requesteeId: user.id },
+          { requesterId: user.id, requesteeId: userId },
+        ],
+        status: "accepted",
+      },
+    });
+
+    const pendingFriendship = await prisma.friendship.findFirst({
       where: {
         requesterId: userId,
         requesteeId: user.id,
@@ -106,7 +114,8 @@ export const searchUserByEmail = async (req: Request, res: Response) => {
       fullName: user.fullName,
       email: user.email,
       profilePicture: user.imageUrl,
-      isRequested: !!friendship,
+      isRequested: !!pendingFriendship,
+      isFriend: !!existingFriendship,
     });
   } catch (error) {
     return res.status(500).json({ message: "Error searching for user" });
