@@ -6,4 +6,5 @@ export const styles = {
   receivedMessage:
     "text-gray-700 bg-gray-100 dark:bg-gray-800 dark:text-gray-100",
   hoverFriend: "bg-transparent hover:bg-indigo-50 dark:hover:bg-gray-700",
+  description: "text-gray-500 dark:text-gray-300",
 };
