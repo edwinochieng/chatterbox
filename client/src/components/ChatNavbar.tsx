@@ -40,7 +40,7 @@ export default function ChatNavbar({ friend, friendId }: any) {
               {isFriendOnline ? (
                 <p className="text-green-500">Online</p>
               ) : (
-                <p className="text-gray-700">Offline</p>
+                <p className="text-gray-700 dark:text-gray-300">Offline</p>
               )}
             </span>
           </div>

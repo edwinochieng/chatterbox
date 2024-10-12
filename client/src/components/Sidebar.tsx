@@ -22,28 +22,33 @@ import {
   DialogClose,
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
+import { styles } from "@/lib/style";
 
 const sidebarLinks = [
   {
     name: "Messages",
     path: "/chats",
+    route: "/chats",
     icon: <RiMessage3Fill size={24} />,
   },
 
   {
     name: "Discover",
     path: "/discover",
+    route: "/discover",
     icon: <IoPersonAdd size={24} />,
   },
   {
     name: "Friends",
     path: "/friends",
+    route: "/friends",
     icon: <FaUserFriends size={24} />,
   },
 
   {
     name: "Settings",
-    path: "/settings/profile",
+    path: "/settings",
+    route: "/settings/profile",
     icon: <FaCog size={24} />,
   },
 ];
@@ -79,7 +84,7 @@ export default function Sidebar() {
         <div className="h-full relative">
           <button
             onClick={toggleSidebar}
-            className="p-2 focus:outline-none hover:bg-indigo-100 rounded-[6px]"
+            className="p-2 focus:outline-none hover:bg-accentBg rounded-[6px]"
           >
             <FiMenu size={24} />
           </button>
@@ -88,12 +93,12 @@ export default function Sidebar() {
             {sidebarLinks.map((item, index) => (
               <li key={index}>
                 <Link
-                  href={item.path}
-                  className={`flex items-center space-x-4 py-4 px-2 hover:bg-indigo-100 rounded-[6px] cursor-pointer ${
+                  href={item.route}
+                  className={`flex items-center space-x-4 py-4 px-2 rounded-[6px] cursor-pointer ${
                     pathname === item.path ||
                     pathname.startsWith(`${item.path}/`)
-                      ? "bg-indigo-200"
-                      : "bg-transparent"
+                      ? `${styles.activeLink}`
+                      : `${styles.hoverLink}`
                   }`}
                 >
                   <div>{item.icon}</div>
@@ -104,8 +109,8 @@ export default function Sidebar() {
           </ul>
           <div className="absolute bottom-8 w-full">
             <Dialog>
-              <DialogTrigger>
-                <div className="flex items-center space-x-4 py-4 px-2 hover:bg-indigo-100 rounded-[6px] font-semibold cursor-pointer">
+              <DialogTrigger className="w-full">
+                <div className="flex items-center space-x-4 py-4 px-2 hover:bg-accentBg rounded-[6px] font-semibold cursor-pointer">
                   <MdLogout size={24} />
                   {isOpen && <span className="text-lg">Log out</span>}
                 </div>

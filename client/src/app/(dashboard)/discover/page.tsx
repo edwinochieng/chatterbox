@@ -5,13 +5,13 @@ export default function DiscoverPage() {
   return (
     <div>
       <div className="flex flex-row ">
-        <div className="w-full lg:max-w-[300px] xl:max-w-[400px]">
+        <div className="w-full lg:max-w-[300px] xl:max-w-[400px] border border-y-transparent border-l-transparent lg:border-r-gray-200">
           <AddFriends />
         </div>
 
         {/**Prompt */}
-        <div className="hidden lg:block w-full bg-gray-200 h-screen">
-          <h1 className=" text-gray-800">Hello world</h1>
+        <div className="hidden lg:block w-full  h-screen">
+          <h1 className=" ">Hello world</h1>
         </div>
       </div>
     </div>

@@ -10,6 +10,7 @@ import {
   formatTimeToHoursAndMinutes,
 } from "@/lib/dateHelper";
 import { useChat } from "@/context/ChatContext";
+import { styles } from "@/lib/style";
 
 export default function ChatRoom({ chat, friend }: any) {
   const { user } = useAuth();
@@ -103,8 +104,8 @@ export default function ChatRoom({ chat, friend }: any) {
                   <div
                     className={`max-w-xs px-4 py-3 rounded-xl shadow ${
                       message.senderId === userId
-                        ? "bg-accentBg text-white"
-                        : "bg-white text-gray-800"
+                        ? `${styles.sentMessage}`
+                        : `${styles.receivedMessage}`
                     }`}
                   >
                     <p className="text-lg font-medium">{message.content}</p>
@@ -114,16 +115,12 @@ export default function ChatRoom({ chat, friend }: any) {
                         {formatTimeToHoursAndMinutes(message.createdAt)}
                       </span>
 
-                      {/* Seen/Delivered status */}
+                      {/* Seen status */}
                       {message.senderId === userId && (
                         <span>
-                          {message.seen ? (
-                            <span className="text-xs text-gray-500 ml-2">
+                          {message.seen && (
+                            <span className="text-xs text-white ml-2">
                               Seen
-                            </span>
-                          ) : (
-                            <span className="text-xs text-gray-500 ml-2">
-                              Delivered
                             </span>
                           )}
                         </span>
@@ -139,7 +136,7 @@ export default function ChatRoom({ chat, friend }: any) {
         </div>
 
         {/* Text Input */}
-        <div className="bg-white px-12 py-4">
+        <div className="px-12 py-4">
           <TextInput chatId={chatId} />
         </div>
       </div>

@@ -1,6 +1,7 @@
 "use client";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { styles } from "@/lib/style";
 
 const settingsLinks = [
   { name: "Profile", path: "/settings/profile" },
@@ -15,15 +16,17 @@ export default function SettingsLayout({
 }>) {
   const pathname = usePathname();
   return (
-    <div className="flex flex-row">
+    <div className="flex flex-col lg:flex-row">
       <div className="w-full lg:max-w-[280px] xl:max-w-[340px]">
-        <ul className="mt-24 px-3 space-y-2 font-medium">
+        <ul className="mt-5 lg:mt-24 px-3 space-y-2 font-medium">
           {settingsLinks.map((item, index) => (
             <li key={index}>
               <Link
                 href={item.path}
-                className={`flex items-center space-x-4 p-3 hover:bg-indigo-100 rounded-[6px] cursor-pointer ${
-                  pathname === item.path ? "bg-indigo-200" : "bg-transparent"
+                className={`flex items-center space-x-4 p-3 rounded-[6px] cursor-pointer ${
+                  pathname === item.path
+                    ? `${styles.activeLink}`
+                    : `${styles.hoverLink}`
                 }`}
               >
                 <span className="text-lg">{item.name}</span>
@@ -32,7 +35,7 @@ export default function SettingsLayout({
           ))}
         </ul>
       </div>
-      <div className="hidden lg:block w-full h-screen px-4">{children}</div>
+      <div className="w-full h-screen px-4">{children}</div>
     </div>
   );
 }

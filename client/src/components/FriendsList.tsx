@@ -7,6 +7,7 @@ import { useAuth } from "@/context/AuthContext";
 import axios from "axios";
 import { useRouter } from "next/navigation";
 import UserSkeleton from "./UserSkeleton";
+import { styles } from "@/lib/style";
 
 export default function FriendsList() {
   const [searchTerm, setSearchTerm] = useState("");
@@ -65,7 +66,7 @@ export default function FriendsList() {
     <div className="max-h-screen bg-primary">
       <div className="h-full overflow-y-auto custom-scrollbar w-full ">
         <div className="mt-5 px-6">
-          <h1 className="text-3xl font-semibold text-gray-800">My Friends</h1>
+          <h1 className="text-3xl font-semibold ">My Friends</h1>
 
           <div className="flex flex-row items-center justify-between p-1 px-4 w-full my-4 border rounded-[8px] bg-gray-100">
             <input
@@ -73,10 +74,10 @@ export default function FriendsList() {
               placeholder="Search name"
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="flex-1 mr-2 py-2 border-none outline-none bg-transparent"
+              className="flex-1 mr-2 py-2 border-none outline-none bg-transparent dark:text-gray-800"
             />
             <div>
-              <CiSearch size={20} />
+              <CiSearch size={20} className="dark:text-gray-800" />
             </div>
           </div>
         </div>
@@ -95,18 +96,18 @@ export default function FriendsList() {
               {filteredFriends?.map((friend: any) => (
                 <div
                   key={friend?.id}
-                  className="flex flex-row items-center space-x-4 my-1 py-2 px-6 cursor-pointer hover:bg-indigo-100"
+                  className={`flex flex-row items-center space-x-4 my-1 py-2 px-6 cursor-pointer ${styles.hoverFriend}`}
                   onClick={() => handleStartChat(friend?.id)}
                 >
                   <div>
-                    <Avatar className="h-[42px] w-[42px] border border-gray-200">
+                    <Avatar className="h-[42px] w-[42px] border border-gray-200 dark:border-transparent">
                       <AvatarImage
                         src={friend?.imageUrl || "/default-profile.jpg"}
                       />
                     </Avatar>
                   </div>
                   <div>
-                    <span className="text-gray-800 font-semibold text-xl">
+                    <span className="font-semibold text-xl">
                       {friend?.fullName}
                     </span>
                   </div>

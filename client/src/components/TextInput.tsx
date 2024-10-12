@@ -28,7 +28,7 @@ export default function TextInput({ chatId }: { chatId: string }) {
       <TextareaAutosize
         value={message}
         placeholder="Type a message..."
-        className="w-full p-4 text-xl outline-none resize-none overflow-y-auto hidden-scrollbar mr-3"
+        className="w-full p-4 text-xl outline-none resize-none overflow-y-auto hidden-scrollbar mr-3 bg-transparent"
         onChange={(e) => {
           setMessage(e.target.value);
         }}

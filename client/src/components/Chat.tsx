@@ -3,6 +3,7 @@ import React from "react";
 import { Avatar, AvatarImage } from "@/components/ui/avatar";
 import { usePathname, useRouter } from "next/navigation";
 import { formatDateForMessages } from "@/lib/dateHelper";
+import { styles } from "@/lib/style";
 
 export default function Chat({
   id,
@@ -14,8 +15,10 @@ export default function Chat({
   const pathname = usePathname();
   return (
     <div
-      className={`w-full flex flex-row items-center my-3 px-6 py-2 cursor-pointer hover:bg-indigo-50 ${
-        pathname === `/chats/${id}` ? "bg-indigo-100" : "bg-transparent"
+      className={`w-full flex flex-row items-center my-3 px-6 py-3 cursor-pointer  ${
+        pathname === `/chats/${id}`
+          ? "bg-indigo-100 dark:bg-gray-800 hover:bg-indigo-50 dark:hover:bg-gray-800"
+          : `${styles.hoverFriend}`
       }`}
       onClick={() => router.push(`/chats/${id}`)}
     >
@@ -25,24 +28,24 @@ export default function Chat({
 
       <div className="ml-3 flex-1">
         <div className="flex flex-row items-center justify-between">
-          <span className="text-gray-800 font-semibold text-base">
+          <span className="dark:text-gray-100 font-semibold text-base">
             {friend?.fullName}
           </span>
-          <span className="text-gray-500 font-medium text-sm">
+          <span className="text-gray-500 dark:text-gray-50 font-medium text-sm">
             {formatDateForMessages(lastMessage?.createdAt)}
           </span>
         </div>
 
         <div className="flex flex-row items-center justify-between ">
           <div>
-            <p className="text-sm text-gray-700 max-w-full">
+            <p className="text-sm text-gray-700 dark:text-gray-300 max-w-full">
               {lastMessage?.content}
             </p>
           </div>
 
           <div>
             {unreadMessagesCount > 0 && (
-              <div className="relative inline-flex items-center justify-center w-6 h-6 bg-red-500 text-white rounded-full">
+              <div className="relative inline-flex items-center justify-center w-6 h-6 bg-accentBg text-white rounded-full">
                 <span className="text-[10px] font-semibold">
                   {unreadMessagesCount}
                 </span>

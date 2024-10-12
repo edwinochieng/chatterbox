@@ -43,7 +43,7 @@ export default function ChatList() {
     <div className="max-h-screen bg-primary">
       <div className="h-full overflow-y-auto custom-scrollbar w-full ">
         <div className="mt-5 px-6">
-          <h1 className="text-3xl font-semibold text-gray-800">Messages</h1>
+          <h1 className="text-3xl font-semibold ">Messages</h1>
           <div className="">
             <div className="flex flex-row items-center justify-between p-1 px-4 w-full my-6 border rounded-[8px] bg-gray-100">
               <input
@@ -51,10 +51,10 @@ export default function ChatList() {
                 placeholder="Search chats"
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
-                className="flex-1 mr-2 py-2 border-none outline-none bg-transparent"
+                className="flex-1 mr-2 py-2 border-none outline-none bg-transparent dark:text-gray-800"
               />
               <div>
-                <CiSearch size={20} />
+                <CiSearch size={20} className="dark:text-gray-800" />
               </div>
             </div>
           </div>
