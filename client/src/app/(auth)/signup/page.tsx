@@ -67,13 +67,13 @@ export default function SignUpPage() {
   return (
     <div className="max-w-[700px] mx-auto">
       <form
-        className="bg-white  mt-24 lg:mt-12 mb-0 space-y-4 rounded-xl py-8 px-3 sm:px-8 shadow-2xl"
+        className="space-y-4 rounded-xl py-8 px-3 sm:px-8 shadow-2xl dark:bg-[#282828] dark:shadow-transparent"
         onSubmit={handleSubmit(submitHandler)}
       >
-        <p className="text-lg font-medium">Create an account</p>
+        <p className="text-xl font-medium">Create an account</p>
 
         <div>
-          <label htmlFor="name" className="text-sm font-medium">
+          <label htmlFor="name" className="text-base font-medium">
             Name
           </label>
 
@@ -84,7 +84,7 @@ export default function SignUpPage() {
               })}
               type="name"
               id="fullName"
-              className="w-full rounded-lg border border-gray-200 p-3 sm:p-4 pr-12 text-sm focus:outline-indigo-500"
+              className="w-full rounded-[6px] border border-gray-200 dark:border-gray-500 p-3 sm:p-4 pr-12 text-base focus:outline-indigo-500 bg-transparent "
               placeholder="Enter name"
             />
             {errors.fullName && (
@@ -96,7 +96,7 @@ export default function SignUpPage() {
         </div>
 
         <div>
-          <label htmlFor="email" className="text-sm font-medium">
+          <label htmlFor="email" className="text-base font-medium">
             Email
           </label>
 
@@ -111,7 +111,7 @@ export default function SignUpPage() {
               })}
               type="email"
               id="email"
-              className="w-full rounded-lg border border-gray-200 p-3 sm:p-4 pr-12 text-sm focus:outline-indigo-500"
+              className="w-full rounded-[6px] bg-transparent border border-gray-200 dark:border-gray-500 p-3 sm:p-4 pr-12 text-base focus:outline-indigo-500"
               placeholder="Enter email"
             />
             {errors.email && (
@@ -123,7 +123,7 @@ export default function SignUpPage() {
         </div>
 
         <div>
-          <label htmlFor="password" className="text-sm font-medium">
+          <label htmlFor="password" className="text-base font-medium">
             Password
           </label>
 
@@ -138,7 +138,7 @@ export default function SignUpPage() {
               })}
               type="password"
               id="password"
-              className="w-full rounded-lg border border-gray-200 p-3 sm:p-4 pr-12 text-sm focus:outline-indigo-500"
+              className="w-full rounded-[6px] bg-transparent border border-gray-200 dark:border-gray-500 p-3 sm:p-4 pr-12 text-base focus:outline-indigo-500"
               placeholder="Enter password"
             />
             {errors.password && (
@@ -150,7 +150,7 @@ export default function SignUpPage() {
         </div>
 
         <div>
-          <label htmlFor="confirmPassword" className="text-sm font-medium">
+          <label htmlFor="confirmPassword" className="text-base font-medium">
             Confirm Password
           </label>
 
@@ -162,7 +162,7 @@ export default function SignUpPage() {
               })}
               type="password"
               id="confirmPassword"
-              className="w-full rounded-lg border border-gray-200 p-3 sm:p-4 pr-12 text-sm focus:outline-indigo-500"
+              className="w-full rounded-[6px] bg-transparent border border-gray-200 dark:border-gray-500 p-3 sm:p-4 pr-12 text-base focus:outline-indigo-500"
               placeholder="Confirm password"
             />
             {errors.confirmPassword && (
@@ -175,15 +175,15 @@ export default function SignUpPage() {
 
         <button
           type="submit"
-          className="block w-full rounded-lg bg-indigo-500 px-5 py-3 text-sm font-medium text-white"
+          className="block w-full rounded-[6px] bg-accentBg px-5 py-3 text-base font-medium text-white"
           disabled={isPending}
         >
           {isPending ? "Signing up..." : "Sign up"}
         </button>
 
-        <p className="text-center text-sm text-gray-500">
+        <p className="text-center text-sm text-gray-500 dark:text-gray-200">
           Already have an account?
-          <Link className="pl-0.5 underline text-indigo-500" href="/login">
+          <Link className="pl-1 underline text-indigo-500" href="/login">
             Log in
           </Link>
         </p>

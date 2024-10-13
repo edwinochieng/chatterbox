@@ -55,13 +55,13 @@ export default function LoginPage() {
   return (
     <div className="max-w-[700px] mx-auto">
       <form
-        className="bg-white  mt-24 lg:mt-12 mb-0 space-y-4 rounded-xl py-8 px-3 sm:px-8 shadow-2xl"
+        className="dark:bg-[#282828] space-y-4 rounded-xl py-8 px-3 sm:px-8 shadow-2xl dark:shadow-transparent"
         onSubmit={handleSubmit(submitHandler)}
       >
-        <p className="text-lg font-medium">Log in to your account</p>
+        <p className="text-xl font-medium">Log in to your account</p>
 
         <div>
-          <label htmlFor="email" className="text-sm font-medium">
+          <label htmlFor="email" className="text-base font-medium">
             Email
           </label>
 
@@ -76,7 +76,7 @@ export default function LoginPage() {
               })}
               type="email"
               id="email"
-              className="w-full rounded-lg border border-gray-200 p-3 sm:p-4 pr-12 text-sm focus:outline-indigo-500"
+              className="w-full rounded-[6px] border border-gray-200 dark:border-gray-500 p-3 sm:p-4 pr-12 text-base focus:outline-accentBg bg-transparent"
               placeholder="Enter email"
             />
             {errors.email && (
@@ -86,7 +86,7 @@ export default function LoginPage() {
         </div>
 
         <div>
-          <label htmlFor="password" className="text-sm font-medium">
+          <label htmlFor="password" className="text-base font-medium">
             Password
           </label>
 
@@ -97,7 +97,7 @@ export default function LoginPage() {
               })}
               type="password"
               id="password"
-              className="w-full rounded-lg border border-gray-200 p-3 sm:p-4 pr-12 text-sm focus:outline-indigo-500"
+              className="w-full rounded-[6px] border border-gray-200 dark:border-gray-500 p-3 sm:p-4 pr-12 text-base focus:outline-accentBg bg-transparent"
               placeholder="Enter password"
             />
             {errors.password && <span>{errors.password.message}</span>}
@@ -106,15 +106,15 @@ export default function LoginPage() {
 
         <button
           type="submit"
-          className="block w-full rounded-lg bg-indigo-500 px-5 py-3 text-sm font-medium text-white"
+          className="block w-full rounded-[6px] bg-accentBg px-5 py-3 text-base font-medium text-white"
           disabled={isPending}
         >
           {isPending ? "Signing in..." : "Sign in"}
         </button>
 
-        <p className="text-center text-sm text-gray-500">
+        <p className="text-center text-sm text-gray-500 dark:text-gray-200">
           No account?
-          <Link className="pl-0.5 underline text-indigo-500" href="/signup">
+          <Link className="pl-1 underline text-indigo-500" href="/signup">
             Sign up
           </Link>
         </p>
