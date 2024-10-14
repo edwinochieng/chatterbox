@@ -1,90 +1,34 @@
 "use client";
 
 import React from "react";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { useForm } from "react-hook-form";
-import { z } from "zod";
-
-import { Button } from "@/components/ui/button";
-import {
-  Form,
-  FormControl,
-  FormDescription,
-  FormField,
-  FormItem,
-  FormLabel,
-} from "@/components/ui/form";
+import { PiBellSimpleRingingBold } from "react-icons/pi";
 import { Switch } from "@/components/ui/switch";
-import { toast } from "@/components/ui/use-toast";
 import MainNavbar from "@/components/MainNavbar";
-
-const FormSchema = z.object({
-  marketing_emails: z.boolean().default(false).optional(),
-  security_emails: z.boolean(),
-});
+import { styles } from "@/lib/style";
+import NotificationSwitch from "@/components/NotificationSwitch";
 
 export default function NotificationSettings() {
-  const form = useForm<z.infer<typeof FormSchema>>({
-    resolver: zodResolver(FormSchema),
-    defaultValues: {
-      security_emails: true,
-    },
-  });
-
-  function onSubmit(data: z.infer<typeof FormSchema>) {
-    toast({
-      title: "You submitted the following values:",
-      description: (
-        <pre className="mt-2 w-[340px] rounded-md bg-slate-950 p-4">
-          <code className="text-white">{JSON.stringify(data, null, 2)}</code>
-        </pre>
-      ),
-    });
-  }
-
   return (
     <div>
       <MainNavbar
         title="Notifications"
         description="Configure how you receive notifications."
       />
-      <div className="pt-12">
-        <Form {...form}>
-          <form
-            onSubmit={form.handleSubmit(onSubmit)}
-            className="w-full space-y-6"
-          >
-            <div>
-              <h3 className="mb-4 text-lg font-medium">Notifications</h3>
-              <div className="space-y-4">
-                <FormField
-                  control={form.control}
-                  name="marketing_emails"
-                  render={({ field }) => (
-                    <FormItem className="flex flex-row items-center justify-between rounded-lg border p-4">
-                      <div className="space-y-0.5">
-                        <FormLabel className="text-base">
-                          Marketing emails
-                        </FormLabel>
-                        <FormDescription>
-                          Receive emails about new products, features, and more.
-                        </FormDescription>
-                      </div>
-                      <FormControl className="bg-red-500">
-                        <Switch
-                          checked={field.value}
-                          onCheckedChange={field.onChange}
-                          className="text-red-600"
-                        />
-                      </FormControl>
-                    </FormItem>
-                  )}
-                />
-              </div>
-            </div>
-            <Button type="submit">Submit</Button>
-          </form>
-        </Form>
+      <div className="pt-12 max-w-[500px]">
+        <div className=" py-4 flex items-center space-x-4 rounded-[6px] border p-4 dark:border-gray-400">
+          <PiBellSimpleRingingBold size={28} />
+          <div className="flex-1 space-y-1">
+            <p className="text-lg font-medium leading-none">
+              Push Notifications
+            </p>
+            <p
+              className={`text-base text-muted-foreground ${styles.description}`}
+            >
+              Send notifications to device.
+            </p>
+          </div>
+          <NotificationSwitch />
+        </div>
       </div>
     </div>
   );
