@@ -16,12 +16,14 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
+import { MdEdit } from "react-icons/md";
 import { toast } from "react-hot-toast";
 import React, { useRef } from "react";
 import MainNavbar from "@/components/MainNavbar";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import axios from "axios";
 import { useAuth } from "@/context/AuthContext";
+import { styles } from "@/lib/style";
 
 const FormSchema = z.object({
   fullName: z.string(),
@@ -102,11 +104,15 @@ export default function ProfileSettings() {
                 name="fullName"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Name</FormLabel>
+                    <FormLabel className="text-base">Name</FormLabel>
                     <FormControl>
-                      <Input placeholder="Your full name" {...field} />
+                      <Input
+                        placeholder="Your full name"
+                        {...field}
+                        className={styles.form}
+                      />
                     </FormControl>
-                    <FormDescription>
+                    <FormDescription className={styles.description}>
                       This is your public display name.
                     </FormDescription>
                     <FormMessage />
@@ -119,14 +125,15 @@ export default function ProfileSettings() {
                 name="bio"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Bio</FormLabel>
+                    <FormLabel className="text-base">Bio</FormLabel>
                     <FormControl>
                       <Textarea
                         placeholder="Tell us more about yourself"
                         {...field}
+                        className={styles.form}
                       />
                     </FormControl>
-                    <FormDescription>
+                    <FormDescription className={styles.description}>
                       This is your public display name.
                     </FormDescription>
                     <FormMessage />
@@ -135,7 +142,7 @@ export default function ProfileSettings() {
               />
               <Button
                 type="submit"
-                className="text-white bg-black rounded-lg hover:bg-black/70"
+                className={styles.button}
                 disabled={isPending}
               >
                 {isPending ? "Updating..." : "Update profile"}
@@ -154,9 +161,10 @@ export default function ProfileSettings() {
             <div className="mt-4">
               <button
                 onClick={handleButtonClick}
-                className="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-300"
+                className="flex flex-row items-center space-x-1 p-2 bg-accentBg text-white rounded-[6px] hover:bg-accentBg/90 "
               >
-                Edit Profile Pic
+                <MdEdit size={20} />
+                <span className="text-base">Edit</span>
               </button>
               <input
                 type="file"

@@ -115,23 +115,31 @@ export default function Sidebar() {
                   {isOpen && <span className="text-lg">Log out</span>}
                 </div>
               </DialogTrigger>
-              <DialogContent className="bg-white shadow-2xl">
+              <DialogContent className={styles.card}>
                 <DialogHeader>
-                  <DialogTitle onClick={handleLogOut}>
+                  <DialogTitle onClick={handleLogOut} className="text-xl">
                     Are you absolutely sure?
                   </DialogTitle>
-                  <DialogDescription>
+                  <DialogDescription className="text-sm dark:text-gray-300">
                     Logging out will temporarily hide chat history. To see it
                     again, log back in.
                   </DialogDescription>
                 </DialogHeader>
                 <DialogFooter>
                   <DialogClose asChild>
-                    <Button type="button" variant="secondary">
+                    <Button
+                      type="button"
+                      variant="secondary"
+                      className="text-base"
+                    >
                       Close
                     </Button>
                   </DialogClose>
-                  <Button type="button" onClick={handleLogOut}>
+                  <Button
+                    type="button"
+                    onClick={handleLogOut}
+                    className="text-base"
+                  >
                     Log out
                   </Button>
                 </DialogFooter>

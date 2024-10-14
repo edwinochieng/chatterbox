@@ -20,6 +20,7 @@ import MainNavbar from "@/components/MainNavbar";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import axios from "axios";
 import { useAuth } from "@/context/AuthContext";
+import { styles } from "@/lib/style";
 
 const FormSchema = z.object({
   email: z.string(),
@@ -70,7 +71,7 @@ export default function AccountSettings() {
   return (
     <div>
       <MainNavbar title="Account" description="Update your account settings." />
-      <div className="pt-12">
+      <div className="pt-12 max-w-[800px]">
         <Form {...form}>
           <form
             onSubmit={form.handleSubmit(submitHandler)}
@@ -81,11 +82,15 @@ export default function AccountSettings() {
               name="email"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Email</FormLabel>
+                  <FormLabel className="text-base">Email</FormLabel>
                   <FormControl>
-                    <Input placeholder="Your email" {...field} />
+                    <Input
+                      placeholder="Your email"
+                      className={styles.form}
+                      {...field}
+                    />
                   </FormControl>
-                  <FormDescription>
+                  <FormDescription className={styles.description}>
                     This is your public display name.
                   </FormDescription>
                   <FormMessage />
@@ -97,15 +102,16 @@ export default function AccountSettings() {
               name="password"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Password</FormLabel>
+                  <FormLabel className="text-base">Password</FormLabel>
                   <FormControl>
                     <Input
                       type="password"
                       placeholder="Your password"
+                      className={styles.form}
                       {...field}
                     />
                   </FormControl>
-                  <FormDescription>
+                  <FormDescription className={styles.description}>
                     This is your public display name.
                   </FormDescription>
                   <FormMessage />
@@ -114,10 +120,10 @@ export default function AccountSettings() {
             />
             <Button
               type="submit"
-              className="text-white bg-black rounded-lg hover:bg-black/70"
+              className={styles.button}
               disabled={isPending}
             >
-              {isPending ? "Updating.." : "Update Account Details"}
+              {isPending ? "Updating.." : "Update Details"}
             </Button>
           </form>
         </Form>
