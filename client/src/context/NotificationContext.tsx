@@ -32,14 +32,14 @@ export const NotificationProvider: React.FC<{ children: React.ReactNode }> = ({
   }, [isNotificationOn]);
 
   useEffect(() => {
-    socket?.on("messageReceived", (data: { message: string }) => {
+    socket?.on("newMessageNotification", (data: { message: string }) => {
       if (isNotificationOn && Notification.permission === "granted") {
-        new Notification("New Message");
+        new Notification("You have a new message!");
       }
     });
 
     return () => {
-      socket?.off("messageReceived");
+      socket?.off("newMessageNotification");
     };
   }, [isNotificationOn, socket]);
 

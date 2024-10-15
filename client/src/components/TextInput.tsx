@@ -5,7 +5,13 @@ import { BsFillSendFill } from "react-icons/bs";
 import { useAuth } from "@/context/AuthContext";
 import { useSocket } from "@/context/SocketContext";
 
-export default function TextInput({ chatId }: { chatId: string }) {
+export default function TextInput({
+  chatId,
+  friendId,
+}: {
+  chatId: string;
+  friendId: string;
+}) {
   const [message, setMessage] = useState("");
   const { user } = useAuth();
   const senderId = user?.userId;
@@ -17,6 +23,7 @@ export default function TextInput({ chatId }: { chatId: string }) {
     socket?.emit("sendMessage", {
       chatId,
       senderId,
+      recipientId: friendId,
       content: message,
     });
 

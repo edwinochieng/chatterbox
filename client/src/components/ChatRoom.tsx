@@ -137,7 +137,7 @@ export default function ChatRoom({ chat, friend }: any) {
 
         {/* Text Input */}
         <div className="px-12 py-4">
-          <TextInput chatId={chatId} />
+          <TextInput chatId={chatId} friendId={friendId} />
         </div>
       </div>
     </div>
