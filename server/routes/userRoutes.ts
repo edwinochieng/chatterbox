@@ -5,6 +5,7 @@ import {
   updateProfilePicture,
   searchUserByEmail,
   searchUserById,
+  updatePublicKey,
 } from "../controllers/userController";
 import { authMiddleware } from "../middleware/authMiddleware";
 
@@ -19,5 +20,7 @@ router.put("/account-settings", authMiddleware, updateAccountSettings);
 router.put("/profile-settings", authMiddleware, updateProfileSettings);
 
 router.put("/profile-picture", authMiddleware, updateProfilePicture);
+
+router.put("/store-public-key", updatePublicKey);
 
 export default router;

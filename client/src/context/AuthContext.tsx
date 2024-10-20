@@ -1,5 +1,11 @@
 import React, { createContext, useState, useEffect, useContext } from "react";
 import axios from "axios";
+import {
+  generateKeyPair,
+  getPrivateKeyFromLocalStorage,
+  storePrivateKeyInLocalStorage,
+  storePublicKeyInDatabase,
+} from "@/lib/encryption";
 
 interface AuthTokens {
   accessToken: string;
@@ -49,11 +55,19 @@ export const AuthProvider = ({
     return JSON.parse(payload);
   };
 
-  const login = (tokens: AuthTokens) => {
+  const login = async (tokens: AuthTokens) => {
     setAuthTokens(tokens);
     localStorage.setItem("authTokens", JSON.stringify(tokens));
     const decodedUser = decodeToken(tokens.accessToken);
     setUser(decodedUser);
+
+    const existingPrivateKey = await getPrivateKeyFromLocalStorage();
+    const userId = decodedUser?.userId;
+    if (!existingPrivateKey) {
+      const keyPair = await generateKeyPair();
+      await storePrivateKeyInLocalStorage(keyPair);
+      await storePublicKeyInDatabase(keyPair, userId);
+    }
 
     scheduleTokenRefresh(tokens.accessToken);
   };

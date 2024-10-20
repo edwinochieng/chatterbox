@@ -4,13 +4,14 @@ import prisma from "../prisma/client";
 export const sendMessageHandler = (io: Server, socket: Socket) => {
   socket.on(
     "sendMessage",
-    async ({ recipientId, senderId, content, chatId }) => {
+    async ({ recipientId, senderId, content, chatId, iv }) => {
       try {
         const newMessage = await prisma.message.create({
           data: {
             conversationId: chatId,
             senderId,
             content,
+            iv,
           },
           include: {
             sender: {
@@ -34,6 +35,7 @@ export const sendMessageHandler = (io: Server, socket: Socket) => {
           content,
           createdAt: newMessage.createdAt,
           seen: false,
+          iv,
         });
       } catch (error) {
         console.error("Error sending message:", error);

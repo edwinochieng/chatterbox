@@ -4,30 +4,51 @@ import TextareaAutosize from "react-textarea-autosize";
 import { BsFillSendFill } from "react-icons/bs";
 import { useAuth } from "@/context/AuthContext";
 import { useSocket } from "@/context/SocketContext";
+import {
+  deriveSharedKey,
+  encryptMessage,
+  getPrivateKeyFromLocalStorage,
+  getPublicKey,
+} from "@/lib/encryption";
 
 export default function TextInput({
   chatId,
   friendId,
+  friendPublicKey,
 }: {
   chatId: string;
   friendId: string;
+  friendPublicKey: string;
 }) {
   const [message, setMessage] = useState("");
   const { user } = useAuth();
   const senderId = user?.userId;
   const socket = useSocket();
 
-  const sendMessage = () => {
-    if (!message.trim() || !senderId) return;
+  const sendMessage = async () => {
+    if (!message.trim() || !senderId || !friendPublicKey) {
+      return;
+    }
+    const privateKey = await getPrivateKeyFromLocalStorage();
+    const publicKey = await getPublicKey(friendPublicKey);
+    if (publicKey && privateKey) {
+      const sharedKey = await deriveSharedKey(privateKey, publicKey);
+      const { encryptedMessage, iv } = await encryptMessage(sharedKey, message);
 
-    socket?.emit("sendMessage", {
-      chatId,
-      senderId,
-      recipientId: friendId,
-      content: message,
-    });
+      const base64EncryptedMessage =
+        Buffer.from(encryptedMessage).toString("base64");
+      const base64Iv = Buffer.from(iv).toString("base64");
 
-    setMessage("");
+      // Emit the message via Socket.IO, sending base64 strings
+      socket?.emit("sendMessage", {
+        chatId,
+        senderId,
+        recipientId: friendId,
+        content: base64EncryptedMessage, // Send the base64-encoded encrypted message
+        iv: base64Iv, // Send the base64-encoded IV
+      });
+      setMessage("");
+    }
   };
 
   return (

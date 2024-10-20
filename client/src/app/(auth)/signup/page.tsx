@@ -8,6 +8,11 @@ import { useRouter } from "next/navigation";
 import { useMutation } from "@tanstack/react-query";
 import toast from "react-hot-toast";
 import { useAuth } from "@/context/AuthContext";
+import {
+  storePrivateKeyInLocalStorage,
+  generateKeyPair,
+  storePublicKeyInDatabase,
+} from "@/lib/encryption";
 
 interface SignUpInputs {
   fullName: string;
@@ -41,10 +46,15 @@ export default function SignUpPage() {
       );
       return result.data;
     },
-    onSuccess: (response) => {
+    onSuccess: async (response) => {
       const tokens = response?.tokens;
       const user = response?.user;
-      if (tokens && user) {
+      const userId = user.id;
+
+      if (tokens && user && userId) {
+        const keyPair = await generateKeyPair();
+        await storePrivateKeyInLocalStorage(keyPair);
+        await storePublicKeyInDatabase(keyPair, userId);
         login(tokens);
         setCurrentUser(user);
         toast.success("Account created successfully!");

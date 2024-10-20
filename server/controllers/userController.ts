@@ -1,6 +1,7 @@
 import { Request, Response } from "express";
 import bcrypt from "bcryptjs";
 import prisma from "../prisma/client";
+import { FriendshipStatus } from "@prisma/client";
 
 export const updateProfileSettings = async (req: Request, res: Response) => {
   const data = req.body;
@@ -72,6 +73,23 @@ export const updateProfilePicture = async (req: Request, res: Response) => {
   }
 };
 
+export const updatePublicKey = async (req: Request, res: Response) => {
+  const { publicKey, userId } = req.body;
+
+  try {
+    const updatedUser = await prisma.user.update({
+      where: { id: userId },
+      data: { publicKey: publicKey },
+    });
+    return res.status(200).json({
+      user: updatedUser,
+      message: "Public key updated successfully",
+    });
+  } catch (error) {
+    return res.status(500).json({ message: "Error updating public key" });
+  }
+};
+
 export const searchUserByEmail = async (req: Request, res: Response) => {
   const { email } = req.query;
   const userId = req.userId;
@@ -97,7 +115,7 @@ export const searchUserByEmail = async (req: Request, res: Response) => {
           { requesterId: userId, requesteeId: user.id },
           { requesterId: user.id, requesteeId: userId },
         ],
-        status: "accepted",
+        status: FriendshipStatus.ACCEPTED,
       },
     });
 
@@ -105,7 +123,7 @@ export const searchUserByEmail = async (req: Request, res: Response) => {
       where: {
         requesterId: userId,
         requesteeId: user.id,
-        status: "pending",
+        status: FriendshipStatus.PENDING,
       },
     });
 
