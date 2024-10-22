@@ -11,6 +11,7 @@ export const sendMessageHandler = (io: Server, socket: Socket) => {
             conversationId: chatId,
             senderId,
             content,
+            seen: false,
             iv,
           },
           include: {
@@ -34,7 +35,7 @@ export const sendMessageHandler = (io: Server, socket: Socket) => {
           senderId,
           content,
           createdAt: newMessage.createdAt,
-          seen: false,
+          seen: newMessage.seen,
           iv,
         });
       } catch (error) {

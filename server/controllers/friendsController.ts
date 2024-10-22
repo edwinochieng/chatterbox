@@ -1,5 +1,6 @@
 import { Request, Response } from "express";
 import prisma from "../prisma/client";
+import { FriendshipStatus } from "@prisma/client";
 
 export const sendFriendRequest = async (req: Request, res: Response) => {
   const { requesteeId } = req.body;
@@ -23,7 +24,7 @@ export const acceptFriendRequest = async (req: Request, res: Response) => {
   try {
     await prisma.friendship.update({
       where: { id: friendshipId },
-      data: { status: "accepted" },
+      data: { status: FriendshipStatus.ACCEPTED },
     });
     return res
       .status(200)
@@ -55,7 +56,7 @@ export const getFriendRequests = async (req: Request, res: Response) => {
 
   try {
     const friendRequests = await prisma.friendship.findMany({
-      where: { requesteeId: userId, status: "pending" },
+      where: { requesteeId: userId, status: FriendshipStatus.PENDING },
       include: {
         requester: {
           select: {
@@ -83,8 +84,8 @@ export const getFriends = async (req: Request, res: Response) => {
     const friendships = await prisma.friendship.findMany({
       where: {
         OR: [
-          { requesterId: userId, status: "accepted" },
-          { requesteeId: userId, status: "accepted" },
+          { requesterId: userId, status: FriendshipStatus.ACCEPTED },
+          { requesteeId: userId, status: FriendshipStatus.ACCEPTED },
         ],
       },
       include: {

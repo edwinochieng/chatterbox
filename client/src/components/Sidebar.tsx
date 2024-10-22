@@ -23,6 +23,9 @@ import {
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { styles } from "@/lib/style";
+import { useDispatch } from "react-redux";
+import { AppDispatch } from "@/store";
+import { setActiveChat } from "@/store/chatSlice";
 
 const sidebarLinks = [
   {
@@ -56,7 +59,8 @@ const sidebarLinks = [
 export default function Sidebar() {
   const [isOpen, setIsOpen] = useState(false);
   const pathname = usePathname();
-  const { user, logout } = useAuth();
+  const { logout } = useAuth();
+  const dispatch: AppDispatch = useDispatch();
   const socket = useSocket() as Socket & {
     handshake: { query: { userId: string } };
   };
@@ -68,6 +72,7 @@ export default function Sidebar() {
       socket.disconnect();
     }
     logout();
+    dispatch(setActiveChat(null));
     router.push("/login");
   };
   const toggleSidebar = () => {

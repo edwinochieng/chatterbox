@@ -5,13 +5,18 @@ export const searchConversation = async (req: Request, res: Response) => {
   const { friendId } = req.body;
   const userId = req.userId;
 
+  if (!friendId || !userId) {
+    return res.status(400).json({ message: "Missing required parameters." });
+  }
+
   try {
+    // Search for an existing conversation between user and friend
     let conversation = await prisma.conversation.findFirst({
       where: {
         AND: [
           {
             members: {
-              some: { userId: userId },
+              some: { userId: String(userId) },
             },
           },
           {
@@ -20,40 +25,6 @@ export const searchConversation = async (req: Request, res: Response) => {
             },
           },
         ],
-      },
-    });
-
-    if (!conversation) {
-      conversation = await prisma.conversation.create({
-        data: {
-          members: {
-            createMany: {
-              data: [{ userId: String(userId) }, { userId: String(friendId) }],
-            },
-          },
-        },
-      });
-    }
-
-    return res.status(200).json(conversation);
-  } catch (error) {
-    return res
-      .status(500)
-      .json({ message: "Error creating or retrieving conversation" });
-  }
-};
-export const getConversationDetails = async (req: Request, res: Response) => {
-  const { conversationId } = req.params;
-  const userId = req.userId;
-
-  if (!userId) {
-    return res.status(400).json({ message: "User ID is required" });
-  }
-
-  try {
-    const conversation = await prisma.conversation.findUnique({
-      where: {
-        id: String(conversationId),
       },
       include: {
         members: {
@@ -71,51 +42,83 @@ export const getConversationDetails = async (req: Request, res: Response) => {
           },
         },
         messages: {
-          include: {
-            readReceipts: true,
+          orderBy: { createdAt: "asc" },
+          select: {
+            id: true,
+            content: true,
+            createdAt: true,
+            senderId: true,
+            iv: true,
+            seen: true,
           },
         },
       },
     });
 
+    // If no conversation is found, create a new one
     if (!conversation) {
-      return res.status(404).json({ message: "Conversation not found" });
+      conversation = await prisma.conversation.create({
+        data: {
+          members: {
+            createMany: {
+              data: [{ userId: String(userId) }, { userId: String(friendId) }],
+            },
+          },
+        },
+        include: {
+          members: {
+            select: {
+              user: {
+                select: {
+                  id: true,
+                  fullName: true,
+                  email: true,
+                  imageUrl: true,
+                  bio: true,
+                  publicKey: true,
+                },
+              },
+            },
+          },
+          messages: true,
+        },
+      });
     }
 
     const friend = conversation?.members.find(
-      (member) => member.user.id !== userId
+      (member) => member.user.id !== String(userId)
     )?.user;
 
-    const messagesWithSeenStatus = conversation.messages.map((message) => {
-      const seenByUserIds = message.readReceipts.map(
-        (receipt) => receipt.userId
-      );
+    const lastMessage =
+      conversation?.messages[conversation.messages.length - 1] || null;
 
-      if (message.senderId === userId) {
-        return {
-          ...message,
-          seen: seenByUserIds.includes(friend!.id),
-        };
-      } else {
-        return {
-          ...message,
-          seen: seenByUserIds.includes(userId),
-        };
-      }
+    const unreadMessagesCount = await prisma.message.count({
+      where: {
+        conversationId: conversation?.id,
+        seen: false,
+        senderId: {
+          not: String(userId),
+        },
+      },
     });
+
+    const conversationDetails = {
+      id: conversation?.id,
+      friend,
+      messages: conversation?.messages || [],
+      lastMessage,
+      unreadMessagesCount,
+    };
 
     return res.status(200).json({
-      conversation: {
-        ...conversation,
-        messages: messagesWithSeenStatus,
-      },
-      friend,
-      message: "Conversation details fetched successfully",
+      conversation: conversationDetails,
+      message: "Conversation fetched successfully",
     });
   } catch (error) {
+    console.error(error);
     return res
       .status(500)
-      .json({ message: "Error fetching conversation details" });
+      .json({ message: "Error creating or retrieving conversation" });
   }
 };
 
@@ -143,12 +146,16 @@ export const getAllConversations = async (req: Request, res: Response) => {
             },
           },
         },
+
         messages: {
-          orderBy: { createdAt: "desc" },
-          take: 1, // latest message
+          orderBy: { createdAt: "asc" },
           select: {
+            id: true,
             content: true,
             createdAt: true,
+            senderId: true,
+            iv: true,
+            seen: true,
           },
         },
         _count: {
@@ -165,14 +172,13 @@ export const getAllConversations = async (req: Request, res: Response) => {
           (member) => member.user.id !== userId
         )?.user;
 
-        const lastMessage = conversation.messages[0];
+        const lastMessage =
+          conversation.messages[conversation.messages.length - 1];
 
         const unreadMessagesCount = await prisma.message.count({
           where: {
             conversationId: conversation.id,
-            readReceipts: {
-              none: { userId: userId },
-            },
+            seen: false,
             senderId: {
               not: userId,
             },
@@ -182,6 +188,7 @@ export const getAllConversations = async (req: Request, res: Response) => {
         return {
           id: conversation.id,
           friend,
+          messages: conversation.messages,
           lastMessage,
           unreadMessagesCount,
         };

@@ -10,9 +10,7 @@ export default function DiscoverPage() {
         </div>
 
         {/**Prompt */}
-        <div className="hidden lg:block w-full  h-screen">
-          <h1 className=" ">Hello world</h1>
-        </div>
+        <div className="hidden lg:block w-full  h-screen"></div>
       </div>
     </div>
   );

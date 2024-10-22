@@ -7,12 +7,79 @@ import { useAuth } from "@/context/AuthContext";
 import axios from "axios";
 import { useRouter } from "next/navigation";
 import UserSkeleton from "./UserSkeleton";
-import { styles } from "@/lib/style";
+import { RiMessage3Fill } from "react-icons/ri";
+import { setActiveChat, updateChatMessages } from "@/store/chatSlice";
+import { useDispatch } from "react-redux";
+import { AppDispatch } from "@/store";
+import {
+  decryptMessage,
+  deriveSharedKey,
+  getPrivateKeyFromLocalStorage,
+  getPublicKey,
+} from "@/lib/encryption";
+
+const decryptChatMessages = async (chat: any) => {
+  if (!chat || !chat.messages?.length) return chat;
+
+  const privateKey = await getPrivateKeyFromLocalStorage();
+  if (!privateKey) {
+    console.error("Missing private key for decryption");
+    return chat;
+  }
+
+  try {
+    const publicKey = await getPublicKey(chat.friend.publicKey);
+    if (!publicKey) {
+      console.error(`Missing public key for chat: ${chat.id}`);
+      return chat;
+    }
+
+    const sharedKey = await deriveSharedKey(privateKey, publicKey);
+
+    const decryptedMessages = await Promise.all(
+      chat.messages.map(async (message: any) => {
+        if (message.content && message.iv) {
+          try {
+            const encryptedMessageBuffer = Buffer.from(
+              message.content,
+              "base64"
+            );
+            const ivBuffer = Buffer.from(message.iv, "base64");
+
+            const decryptedMessage = await decryptMessage(
+              sharedKey,
+              new Uint8Array(encryptedMessageBuffer),
+              new Uint8Array(ivBuffer)
+            );
+
+            return { ...message, content: decryptedMessage };
+          } catch (error) {
+            console.error(
+              `Error decrypting message in chat ${chat.id}:`,
+              error
+            );
+            return message;
+          }
+        }
+        return message;
+      })
+    );
+
+    return { ...chat, messages: decryptedMessages };
+  } catch (error) {
+    console.error(
+      `Error during message decryption for chat ${chat.id}:`,
+      error
+    );
+    return chat; // Return original chat on error
+  }
+};
 
 export default function FriendsList() {
-  const [searchTerm, setSearchTerm] = useState("");
+  const [searchTerm, setSearchTerm] = useState<string>("");
 
   const { authTokens } = useAuth();
+  const dispatch: AppDispatch = useDispatch();
   const router = useRouter();
   const queryClient = useQueryClient();
 
@@ -31,7 +98,7 @@ export default function FriendsList() {
     },
   });
 
-  const { data: conversation, mutate } = useMutation({
+  const { mutate } = useMutation({
     mutationFn: async (friendId: { friendId: string }) => {
       const result = await axios.post(
         `${process.env.NEXT_PUBLIC_BASE_URL}/api/conversations/search`,
@@ -44,13 +111,26 @@ export default function FriendsList() {
       );
       return result.data;
     },
-    onSuccess: () => {
+    onSuccess: async (response) => {
+      const chat = response?.conversation;
       queryClient.invalidateQueries({ queryKey: ["conversations"] });
+
+      const decryptedChat = await decryptChatMessages(chat);
+
+      dispatch(
+        updateChatMessages({
+          messages: decryptedChat.messages,
+          chatId: decryptedChat.id,
+        })
+      );
+
+      dispatch(setActiveChat(decryptedChat));
+
+      router.push(`/chats`);
     },
   });
 
   const myFriends = data?.friends;
-  const chatId = conversation?.id;
 
   const filteredFriends = myFriends?.filter((friend: any) =>
     friend.fullName.toLowerCase().includes(searchTerm.toLowerCase())
@@ -58,10 +138,8 @@ export default function FriendsList() {
 
   const handleStartChat = (friendId: string) => {
     mutate({ friendId });
-    console.log("ChatId:", chatId);
-
-    router.push(`/chats/${chatId}`);
   };
+
   return (
     <div className="max-h-screen bg-primary">
       <div className="h-full overflow-y-auto custom-scrollbar w-full ">
@@ -96,20 +174,27 @@ export default function FriendsList() {
               {filteredFriends?.map((friend: any) => (
                 <div
                   key={friend?.id}
-                  className={`flex flex-row items-center space-x-4 my-1 py-2 px-6 cursor-pointer ${styles.hoverFriend}`}
-                  onClick={() => handleStartChat(friend?.id)}
+                  className={`flex flex-row items-center justify-between my-1 py-2 px-6 `}
                 >
-                  <div>
-                    <Avatar className="h-[42px] w-[42px] border border-gray-200 dark:border-transparent">
-                      <AvatarImage
-                        src={friend?.imageUrl || "/default-profile.jpg"}
-                      />
-                    </Avatar>
+                  <div className={`flex flex-row items-center space-x-4  `}>
+                    <div>
+                      <Avatar className="h-[42px] w-[42px] border border-gray-200 dark:border-transparent">
+                        <AvatarImage
+                          src={friend?.imageUrl || "/default-profile.jpg"}
+                        />
+                      </Avatar>
+                    </div>
+                    <div>
+                      <span className="font-semibold text-xl">
+                        {friend?.fullName}
+                      </span>
+                    </div>
                   </div>
-                  <div>
-                    <span className="font-semibold text-xl">
-                      {friend?.fullName}
-                    </span>
+                  <div
+                    onClick={() => handleStartChat(friend?.id)}
+                    className="cursor-pointer"
+                  >
+                    <RiMessage3Fill size={30} />
                   </div>
                 </div>
               ))}

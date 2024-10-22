@@ -1,26 +1,16 @@
 "use client";
 import React from "react";
 import { Avatar, AvatarImage } from "@/components/ui/avatar";
-import { usePathname, useRouter } from "next/navigation";
 import { formatDateForMessages } from "@/lib/dateHelper";
-import { styles } from "@/lib/style";
 
 export default function Chat({
-  id,
   friend,
   lastMessage,
   unreadMessagesCount,
 }: any) {
-  const router = useRouter();
-  const pathname = usePathname();
   return (
     <div
-      className={`w-full flex flex-row items-center my-3 px-6 py-3 cursor-pointer  ${
-        pathname === `/chats/${id}`
-          ? "bg-indigo-100 dark:bg-gray-800 hover:bg-indigo-50 dark:hover:bg-gray-800"
-          : `${styles.hoverFriend}`
-      }`}
-      onClick={() => router.push(`/chats/${id}`)}
+      className={`w-full flex flex-row items-center my-3 px-6 py-3 cursor-pointer  `}
     >
       <Avatar className="h-[42px] w-[42px] border border-gray-200">
         <AvatarImage src={friend?.imageUrl || "/default-profile.jpg"} />
@@ -31,9 +21,11 @@ export default function Chat({
           <span className="dark:text-gray-100 font-semibold text-base">
             {friend?.fullName}
           </span>
-          <span className="text-gray-500 dark:text-gray-50 font-medium text-sm">
-            {formatDateForMessages(lastMessage?.createdAt)}
-          </span>
+          {lastMessage?.createdAt && (
+            <span className="text-gray-500 dark:text-gray-50 font-medium text-sm">
+              {formatDateForMessages(lastMessage?.createdAt)}
+            </span>
+          )}
         </div>
 
         <div className="flex flex-row items-center justify-between ">

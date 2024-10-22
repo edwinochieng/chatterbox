@@ -1,21 +1,20 @@
 import prisma from "../prisma/client";
 
-export const markMessageAsSeen = async (messageId: string, userId: string) => {
+export const markMessageAsSeen = async (messageId: string) => {
   try {
-    const existingReceipt = await prisma.readReceipt.findUnique({
+    const unseenMessage = await prisma.message.findUnique({
       where: {
-        userId_messageId: {
-          userId: userId,
-          messageId: messageId,
-        },
+        id: messageId,
       },
     });
 
-    if (!existingReceipt) {
-      await prisma.readReceipt.create({
+    if (unseenMessage && !unseenMessage.seen) {
+      await prisma.message.update({
+        where: {
+          id: messageId,
+        },
         data: {
-          userId: userId,
-          messageId: messageId,
+          seen: true,
         },
       });
     }

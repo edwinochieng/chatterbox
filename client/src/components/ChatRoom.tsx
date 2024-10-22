@@ -1,5 +1,5 @@
 "use client";
-import React, { useEffect, useState, useRef } from "react";
+import React, { useEffect, useRef } from "react";
 import TextInput from "./TextInput";
 import ChatNavbar from "./ChatNavbar";
 import { useAuth } from "@/context/AuthContext";
@@ -9,7 +9,6 @@ import {
   formatDateWithOrdinal,
   formatTimeToHoursAndMinutes,
 } from "@/lib/dateHelper";
-import { useChat } from "@/context/ChatContext";
 import { styles } from "@/lib/style";
 import {
   decryptMessage,
@@ -17,18 +16,22 @@ import {
   getPrivateKeyFromLocalStorage,
   getPublicKey,
 } from "@/lib/encryption";
+import { useDispatch } from "react-redux";
+import { AppDispatch } from "../store";
+import {
+  resetUnreadMessagesCount,
+  updateChat,
+  updateMessageSeenStatus,
+} from "../store/chatSlice";
 
-export default function ChatRoom({ chat, friend }: any) {
+export default function ChatRoom({ chatId, messages, friend }: any) {
   const { user } = useAuth();
-  const [messages, setMessages] = useState(chat?.messages);
   const socket = useSocket();
-  const { resetUnreadMessagesCount, updateChats } = useChat();
-
+  const dispatch: AppDispatch = useDispatch();
   const messagesEndRef = useRef<HTMLDivElement | null>(null);
   const userId = user?.userId;
   const friendId = friend?.id;
   const friendPublicKey = friend?.publicKey;
-  const chatId = chat?.id;
 
   useTabActivity();
 
@@ -39,103 +42,44 @@ export default function ChatRoom({ chat, friend }: any) {
   let lastDate: any;
 
   useEffect(() => {
-    const decryptPreviousMessages = async () => {
-      if (!messages?.length) {
-        return;
-      }
-      const privateKey = await getPrivateKeyFromLocalStorage();
-      const publicKey = await getPublicKey(friendPublicKey);
-
-      if (privateKey && publicKey) {
-        const sharedKey = await deriveSharedKey(privateKey, publicKey);
-        const decryptedMessages = await Promise.all(
-          messages.map(async (message: any) => {
-            if (message.content && message.iv) {
-              try {
-                const encryptedMessageBuffer = Buffer.from(
-                  message.content,
-                  "base64"
-                );
-                const ivBuffer = Buffer.from(message.iv, "base64");
-
-                const encryptedMessageArray = new Uint8Array(
-                  encryptedMessageBuffer
-                );
-                const ivArray = new Uint8Array(ivBuffer);
-
-                // Decrypt the message content
-                const decryptedMessage = await decryptMessage(
-                  sharedKey,
-                  encryptedMessageArray,
-                  ivArray
-                );
-
-                console.log("Decrypted Previous Message:", decryptedMessage); // Log decrypted message
-                return { ...message, content: decryptedMessage }; // Return decrypted message
-              } catch (error) {
-                console.error("Error decrypting previous message:", error);
-                return message; // Return original message if decryption fails
-              }
-            }
-            return message; // Return the original message if not encrypted
-          })
-        );
-
-        // Update the state with decrypted messages
-        setMessages(decryptedMessages);
-      } else {
-        console.error("Missing private key or public key for decryption");
-      }
-    };
-
-    decryptPreviousMessages();
-  }, [messages, friendPublicKey]);
-
-  useEffect(() => {
     socket?.on("messageReceived", async (newMessage) => {
-      const { content, iv } = newMessage;
+      const { content, iv, senderId } = newMessage;
 
-      // Ensure content and iv are defined before proceeding
       if (!content || !iv) {
         console.error(
           "Received message with missing content or iv",
           newMessage
         );
-        return; // Exit if either is undefined
+        return;
       }
 
       try {
-        // Base64 decode the encrypted content and iv
         const encryptedMessageBuffer = Buffer.from(content, "base64");
         const ivBuffer = Buffer.from(iv, "base64");
 
-        // Convert Buffer to Uint8Array (required for Web Crypto API)
         const encryptedMessageArray = new Uint8Array(encryptedMessageBuffer);
         const ivArray = new Uint8Array(ivBuffer);
 
-        // Get private key and friend's public key
         const privateKey = await getPrivateKeyFromLocalStorage();
         const publicKey = await getPublicKey(friendPublicKey);
 
-        if (privateKey && publicKey) {
+        if (privateKey && publicKey && userId) {
           const sharedKey = await deriveSharedKey(privateKey, publicKey);
-          console.log("Shared Key:", sharedKey); // Log the shared key for debugging
 
-          // Decrypt the message using the shared key
           const decryptedMessage = await decryptMessage(
             sharedKey,
             encryptedMessageArray,
             ivArray
           );
 
-          console.log("Decrypted Message:", decryptedMessage); // Log the decrypted message
-
-          // Update the UI with the decrypted message
-          setMessages((prevMessages: any) => [
-            ...prevMessages,
-            { ...newMessage, content: decryptedMessage },
-          ]);
-          updateChats(decryptedMessage, chatId);
+          dispatch(
+            updateChat({
+              message: { ...newMessage, content: decryptedMessage },
+              chatId,
+              senderId,
+              userId,
+            })
+          );
         } else {
           console.error("Missing private key or public key");
         }
@@ -147,39 +91,32 @@ export default function ChatRoom({ chat, friend }: any) {
     return () => {
       socket?.off("messageReceived");
     };
-  }, [socket, friendPublicKey, updateChats, chatId]);
+  }, [socket, friendPublicKey, dispatch, userId, chatId]);
 
   useEffect(() => {
-    if (messages.length) {
-      messages.forEach((message: any) => {
-        if (message.senderId !== userId) {
-          socket?.emit("seeMessage", {
-            chatId,
-            messageId: message.id,
-            userId,
-          });
-        }
+    const unseenMessages = messages.filter(
+      (message: any) => message.senderId !== userId && !message.seen
+    );
+    unseenMessages.forEach((message: any) => {
+      socket?.emit("seeMessage", {
+        chatId,
+        messageId: message.id,
+        userId,
       });
-    }
-
+    });
     scrollToBottom();
   }, [messages, chatId, userId, socket]);
 
   useEffect(() => {
-    // Listen for message seen updates
     socket?.on("messageSeen", ({ messageId }) => {
-      setMessages((prevMessages: any) =>
-        prevMessages.map((message: any) =>
-          message.id === messageId ? { ...message, seen: true } : message
-        )
-      );
-      resetUnreadMessagesCount(chatId);
+      dispatch(updateMessageSeenStatus({ messageId, chatId }));
+      dispatch(resetUnreadMessagesCount(chatId));
     });
 
     return () => {
       socket?.off("messageSeen");
     };
-  }, [socket, resetUnreadMessagesCount, chatId]);
+  }, [socket, dispatch, chatId]);
 
   return (
     <div>
