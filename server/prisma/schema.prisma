@@ -16,11 +16,11 @@ model User {
   password      String
   imageUrl      String?
   bio           String?
+  publicKey     String?
   createdAt     DateTime         @default(now())
   updatedAt     DateTime         @updatedAt
   conversations ConversationMember[]
   messages      Message[]
-  readReceipts  ReadReceipt[]
   sentFriendRequests   Friendship[]   @relation("SentFriendRequests")
   receivedFriendRequests Friendship[] @relation("ReceivedFriendRequests")
 }
@@ -30,11 +30,13 @@ model Message {
   content        String
   senderId       String
   conversationId String
+  iv             String
+  seen           Boolean
   createdAt      DateTime      @default(now())
   updatedAt      DateTime      @updatedAt
   conversation   Conversation  @relation(fields: [conversationId], references: [id], onDelete: Cascade)
   sender         User          @relation(fields: [senderId], references: [id], onDelete: Cascade)
-  readReceipts   ReadReceipt[]
+ 
 }
 
 model Conversation {
@@ -57,23 +59,12 @@ model ConversationMember {
   @@id([userId, conversationId])
 }
 
-model ReadReceipt {
-  id        String   @id @default(cuid())
-  userId    String
-  messageId String
-  readAt    DateTime @default(now())
-  message   Message  @relation(fields: [messageId], references: [id], onDelete: Cascade)
-  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-
-  @@unique([userId, messageId])
-}
-
 
 model Friendship {
   id        String   @id @default(cuid())
   requesterId String 
   requesteeId String 
-  status     String   @default("pending") 
+  status FriendshipStatus @default(PENDING)
   createdAt  DateTime @default(now())
   requester User @relation("SentFriendRequests", fields: [requesterId], references: [id], onDelete: Cascade)
   requestee User @relation("ReceivedFriendRequests", fields: [requesteeId], references: [id], onDelete: Cascade)
@@ -82,7 +73,7 @@ model Friendship {
 }
 
 
-enum FriendRequestStatus {
+enum FriendshipStatus {
   PENDING
   ACCEPTED
 }
