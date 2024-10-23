@@ -24,6 +24,7 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import axios from "axios";
 import { useAuth } from "@/context/AuthContext";
 import { styles } from "@/lib/style";
+import { UploadButton } from "@/lib/uploadthing";
 
 const FormSchema = z.object({
   fullName: z.string(),
@@ -31,8 +32,6 @@ const FormSchema = z.object({
 });
 
 export default function ProfileSettings() {
-  const fileInputRef = useRef<HTMLInputElement | null>(null);
-
   const { authTokens, currentUser, setCurrentUser } = useAuth();
   const queryClient = useQueryClient();
 
@@ -66,6 +65,30 @@ export default function ProfileSettings() {
       toast.error(error.response?.data?.msg || "Something went wrong!");
     },
   });
+
+  const profilePicMutation = useMutation({
+    mutationFn: async (profilePictureUrl: { profilePictureUrl: string }) => {
+      const result = await axios.put(
+        `${process.env.NEXT_PUBLIC_BASE_URL}/api/user/profile-picture`,
+        profilePictureUrl,
+        {
+          headers: {
+            Authorization: `Bearer ${authTokens?.accessToken}`,
+          },
+        }
+      );
+      return result.data;
+    },
+    onSuccess: (response) => {
+      queryClient.invalidateQueries({ queryKey: ["currentUser"] });
+      setCurrentUser(response?.user);
+      toast.success("Profile picture updated successfully!");
+    },
+    onError: (error: any) => {
+      toast.error(error.response?.data?.msg || "Something went wrong!");
+    },
+  });
+
   const submitHandler = async (data: z.infer<typeof FormSchema>) => {
     mutate({
       fullName: data.fullName,
@@ -73,19 +96,7 @@ export default function ProfileSettings() {
     });
   };
 
-  const handleButtonClick = (): void => {
-    if (fileInputRef.current) {
-      fileInputRef.current.click();
-    }
-  };
-
-  const handleFileChange = (event: any): void => {
-    const file = event.target.files?.[0];
-    if (file) {
-      // Handle the file upload or preview logic here
-      console.log("Selected file:", file);
-    }
-  };
+  console.log(currentUser?.imageUrl);
   return (
     <div>
       <MainNavbar
@@ -151,27 +162,25 @@ export default function ProfileSettings() {
           </Form>
         </div>
         <div className="flex-1">
-          <div className="flex flex-col justify-center">
+          <div className="flex flex-col items-start mb-6">
             <div>
               <Avatar className="h-[170px] w-[170px]">
-                <AvatarImage src="/profile.jpg" />
-                <AvatarFallback>CN</AvatarFallback>
+                <AvatarImage
+                  src={currentUser?.imageUrl || "/default-profile.jpg"}
+                />
               </Avatar>
             </div>
-            <div className="mt-4">
-              <button
-                onClick={handleButtonClick}
-                className="flex flex-row items-center space-x-1 p-2 bg-accentBg text-white rounded-[6px] hover:bg-accentBg/90 "
-              >
-                <MdEdit size={20} />
-                <span className="text-base">Edit</span>
-              </button>
-              <input
-                type="file"
-                accept="image/*"
-                ref={fileInputRef}
-                onChange={handleFileChange}
-                className="hidden"
+            <div>
+              <UploadButton
+                className="mt-4 ut-button:bg-accentBg ut-button:ut-readying:bg-accentBg/50"
+                endpoint="imageUploader"
+                onClientUploadComplete={(res) => {
+                  const url = res[0].url;
+                  profilePicMutation.mutate({ profilePictureUrl: url });
+                }}
+                onUploadError={(error: Error) => {
+                  toast.error("File upload failed");
+                }}
               />
             </div>
           </div>
