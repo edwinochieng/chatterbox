@@ -10,7 +10,6 @@ import { Button } from "@/components/ui/button";
 import {
   Form,
   FormControl,
-  FormDescription,
   FormField,
   FormItem,
   FormLabel,
@@ -123,9 +122,7 @@ export default function ProfileSettings() {
                         className={styles.form}
                       />
                     </FormControl>
-                    <FormDescription className={styles.description}>
-                      This is your public display name.
-                    </FormDescription>
+
                     <FormMessage />
                   </FormItem>
                 )}
@@ -144,9 +141,7 @@ export default function ProfileSettings() {
                         className={styles.form}
                       />
                     </FormControl>
-                    <FormDescription className={styles.description}>
-                      This is your public display name.
-                    </FormDescription>
+
                     <FormMessage />
                   </FormItem>
                 )}
