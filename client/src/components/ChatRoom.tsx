@@ -158,26 +158,25 @@ export default function ChatRoom({ chatId, messages, friend }: any) {
                   }`}
                 >
                   <div
-                    className={`max-w-xs px-4 py-3 rounded-xl shadow ${
+                    className={`max-w-[75%] px-4 py-3 rounded-xl shadow ${
                       message.senderId === userId
                         ? `${styles.sentMessage}`
                         : `${styles.receivedMessage}`
                     }`}
                   >
-                    <p className="text-lg font-medium">{message.content}</p>
+                    <p className="text-lg font-normal break-words">
+                      {message.content}
+                    </p>
 
-                    <div className="ml-auto flex items-center">
+                    <div className="flex items-center justify-end">
                       <span className="text-sm">
                         {formatTimeToHoursAndMinutes(message.createdAt)}
                       </span>
 
-                      {/* Seen status */}
                       {message.senderId === userId && (
-                        <span>
+                        <span className="ml-2">
                           {message.seen && (
-                            <span className="text-xs text-white ml-2">
-                              Seen
-                            </span>
+                            <span className="text-sm text-white ">Seen</span>
                           )}
                         </span>
                       )}
