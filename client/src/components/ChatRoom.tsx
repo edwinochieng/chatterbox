@@ -1,5 +1,5 @@
 "use client";
-import React, { useEffect, useRef } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import TextInput from "./TextInput";
 import ChatNavbar from "./ChatNavbar";
 import { useAuth } from "@/context/AuthContext";
@@ -25,6 +25,7 @@ import {
 } from "../store/chatSlice";
 
 export default function ChatRoom({ chatId, messages, friend }: any) {
+  const [chatMessages, setChatMessages] = useState(messages);
   const { user } = useAuth();
   const socket = useSocket();
   const dispatch: AppDispatch = useDispatch();
@@ -32,6 +33,8 @@ export default function ChatRoom({ chatId, messages, friend }: any) {
   const userId = user?.userId;
   const friendId = friend?.id;
   const friendPublicKey = friend?.publicKey;
+
+  console.log("These are my messages:", chatMessages);
 
   useTabActivity();
 
@@ -72,12 +75,15 @@ export default function ChatRoom({ chatId, messages, friend }: any) {
             ivArray
           );
 
+          setChatMessages((prevMessages: any) => [
+            ...prevMessages,
+            { ...newMessage, content: decryptedMessage },
+          ]);
+
           dispatch(
             updateChat({
               message: { ...newMessage, content: decryptedMessage },
               chatId,
-              senderId,
-              userId,
             })
           );
         } else {
@@ -109,6 +115,11 @@ export default function ChatRoom({ chatId, messages, friend }: any) {
 
   useEffect(() => {
     socket?.on("messageSeen", ({ messageId }) => {
+      setChatMessages((prevMessages: any) =>
+        prevMessages.map((message: any) =>
+          message.id === messageId ? { ...message, seen: true } : message
+        )
+      );
       dispatch(updateMessageSeenStatus({ messageId, chatId }));
       dispatch(resetUnreadMessagesCount(chatId));
     });
@@ -127,7 +138,7 @@ export default function ChatRoom({ chatId, messages, friend }: any) {
         {/* Chat Messages */}
 
         <div className="flex-1 overflow-y-auto hidden-scrollbar xl:custom-scrollbar p-4 lg:p-12 space-y-2">
-          {messages?.map((message: any) => {
+          {chatMessages?.map((message: any) => {
             const showDate =
               formatDateWithOrdinal(message.createdAt) !== lastDate;
             lastDate = formatDateWithOrdinal(message.createdAt);

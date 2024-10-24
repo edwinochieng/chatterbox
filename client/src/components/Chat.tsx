@@ -21,7 +21,7 @@ export default function Chat({
           <span className="dark:text-gray-100 font-semibold text-base">
             {friend?.fullName}
           </span>
-          {lastMessage?.createdAt && (
+          {lastMessage && (
             <span className="text-gray-500 dark:text-gray-50 font-medium text-sm">
               {formatDateForMessages(lastMessage?.createdAt)}
             </span>

@@ -13,7 +13,7 @@ interface Chat {
   id: string;
   friend: any;
   messages: Message[];
-  lastMessage: string;
+  lastMessage: Message;
   unreadMessagesCount: number;
 }
 
@@ -40,21 +40,15 @@ const chatSlice = createSlice({
     updateChat: (
       state,
       action: PayloadAction<{
-        message: string;
+        message: Message;
         chatId: string;
-        senderId: string;
-        userId: string;
       }>
     ) => {
-      const { message, chatId, senderId, userId } = action.payload;
+      const { message, chatId } = action.payload;
       const chat = state.chats.find((chat) => chat.id === chatId);
 
       if (chat) {
         chat.lastMessage = message;
-
-        if (senderId !== userId && state.activeChat?.id !== chatId) {
-          chat.unreadMessagesCount += 1;
-        }
       }
     },
     updateChatMessages: (
@@ -65,10 +59,6 @@ const chatSlice = createSlice({
       const chat = state.chats.find((chat) => chat.id === chatId);
       if (chat) {
         chat.messages = messages;
-
-        if (messages.length > 0) {
-          chat.lastMessage = messages[messages.length - 1].content;
-        }
       }
     },
     resetUnreadMessagesCount: (state, action: PayloadAction<string>) => {
