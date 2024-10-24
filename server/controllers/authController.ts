@@ -41,9 +41,18 @@ export const signup = async (req: Request, res: Response) => {
     const accessToken = createAccessToken(user.id);
     const refreshToken = createRefreshToken(user.id);
 
+    const userData = {
+      id: user.id,
+      fullName: user.fullName,
+      email: user.email,
+      imageUrl: user.imageUrl,
+      bio: user.bio,
+      publicKey: user.publicKey,
+    };
+
     return res
       .status(201)
-      .json({ user, tokens: { accessToken, refreshToken } });
+      .json({ user: userData, tokens: { accessToken, refreshToken } });
   } catch (error) {
     if (error instanceof z.ZodError) {
       return res.status(400).json({ errors: error.errors });
@@ -71,9 +80,18 @@ export const login = async (req: Request, res: Response) => {
     const accessToken = createAccessToken(user.id);
     const refreshToken = createRefreshToken(user.id);
 
+    const userData = {
+      id: user.id,
+      fullName: user.fullName,
+      email: user.email,
+      imageUrl: user.imageUrl,
+      bio: user.bio,
+      publicKey: user.publicKey,
+    };
+
     return res
       .status(200)
-      .json({ user, tokens: { accessToken, refreshToken } });
+      .json({ user: userData, tokens: { accessToken, refreshToken } });
   } catch (error) {
     if (error instanceof z.ZodError) {
       return res.status(400).json({ errors: error.errors });

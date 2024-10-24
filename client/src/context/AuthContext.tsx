@@ -21,12 +21,9 @@ interface CurrentUser {
   id: string;
   fullName: string;
   email: string;
-  emailVerified: Date | null;
-  password: string;
   imageUrl: string | null;
   bio: string | undefined;
-  createdAt: Date;
-  updatedAt: Date;
+  publicKey: string;
 }
 
 interface AuthContextType {

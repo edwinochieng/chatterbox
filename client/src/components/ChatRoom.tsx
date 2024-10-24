@@ -23,8 +23,15 @@ import {
   updateChat,
   updateMessageSeenStatus,
 } from "../store/chatSlice";
+import { Friend, Message } from "@/types";
 
-export default function ChatRoom({ chatId, messages, friend }: any) {
+interface Props {
+  chatId: string;
+  messages: Message[];
+  friend: Friend;
+}
+
+export default function ChatRoom({ chatId, messages, friend }: Props) {
   const [chatMessages, setChatMessages] = useState(messages);
   const { user } = useAuth();
   const socket = useSocket();
@@ -75,7 +82,7 @@ export default function ChatRoom({ chatId, messages, friend }: any) {
             ivArray
           );
 
-          setChatMessages((prevMessages: any) => [
+          setChatMessages((prevMessages: Message[]) => [
             ...prevMessages,
             { ...newMessage, content: decryptedMessage },
           ]);
@@ -101,7 +108,7 @@ export default function ChatRoom({ chatId, messages, friend }: any) {
 
   useEffect(() => {
     const unseenMessages = messages.filter(
-      (message: any) => message.senderId !== userId && !message.seen
+      (message: Message) => message.senderId !== userId && !message.seen
     );
     unseenMessages.forEach((message: any) => {
       socket?.emit("seeMessage", {
@@ -115,8 +122,8 @@ export default function ChatRoom({ chatId, messages, friend }: any) {
 
   useEffect(() => {
     socket?.on("messageSeen", ({ messageId }) => {
-      setChatMessages((prevMessages: any) =>
-        prevMessages.map((message: any) =>
+      setChatMessages((prevMessages: Message[]) =>
+        prevMessages.map((message: Message) =>
           message.id === messageId ? { ...message, seen: true } : message
         )
       );
@@ -138,7 +145,7 @@ export default function ChatRoom({ chatId, messages, friend }: any) {
         {/* Chat Messages */}
 
         <div className="flex-1 overflow-y-auto hidden-scrollbar xl:custom-scrollbar p-4 lg:p-12 space-y-2">
-          {chatMessages?.map((message: any) => {
+          {chatMessages?.map((message: Message) => {
             const showDate =
               formatDateWithOrdinal(message.createdAt) !== lastDate;
             lastDate = formatDateWithOrdinal(message.createdAt);

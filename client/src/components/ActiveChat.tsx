@@ -31,9 +31,9 @@ export default function ActiveChat() {
       <div className="flex flex-row">
         <div className="w-full h-screen ">
           <ChatRoom
-            chatId={activeChat?.id}
-            friend={activeChat?.friend}
-            messages={activeChat?.messages}
+            chatId={activeChat!.id}
+            friend={activeChat!.friend}
+            messages={activeChat!.messages}
           />
         </div>
 

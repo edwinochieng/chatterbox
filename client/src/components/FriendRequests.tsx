@@ -6,6 +6,12 @@ import { IoMdClose } from "react-icons/io";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import axios from "axios";
 import { useAuth } from "@/context/AuthContext";
+import { SearchedFriend } from "@/types";
+
+interface Props {
+  id: string;
+  requester: SearchedFriend;
+}
 
 export default function FriendRequests() {
   const { authTokens } = useAuth();
@@ -56,7 +62,7 @@ export default function FriendRequests() {
           <div className="mt-10 mb-3 px-6">
             <h1 className="font-semibold text-2xl">Friend Requests</h1>
           </div>
-          {data?.friendRequests.map(({ id, requester }: any) => (
+          {data?.friendRequests.map(({ id, requester }: Props) => (
             <div key={id} className="flex justify-between px-6">
               <div className="flex flex-row items-center space-x-4 my-1 py-2 cursor-pointer ">
                 <div>

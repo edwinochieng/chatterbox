@@ -140,7 +140,9 @@ export const getAllConversations = async (req: Request, res: Response) => {
               select: {
                 id: true,
                 fullName: true,
+                email: true,
                 imageUrl: true,
+                bio: true,
                 publicKey: true,
               },
             },

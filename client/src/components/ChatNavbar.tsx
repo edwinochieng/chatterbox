@@ -3,8 +3,14 @@
 import React, { useEffect, useState } from "react";
 import { Avatar, AvatarImage } from "@/components/ui/avatar";
 import { useSocket } from "@/context/SocketContext";
+import { Friend } from "@/types";
 
-export default function ChatNavbar({ friend, friendId }: any) {
+interface Props {
+  friend: Friend;
+  friendId: string;
+}
+
+export default function ChatNavbar({ friend, friendId }: Props) {
   const [isFriendOnline, setIsFriendOnline] = useState(false);
   const socket = useSocket();
 

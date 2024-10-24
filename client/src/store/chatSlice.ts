@@ -1,21 +1,5 @@
+import { Chat, Message } from "@/types";
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
-
-interface Message {
-  id: string;
-  createdAt: Date;
-  content: string;
-  senderId: string;
-  iv: string;
-  seen: boolean;
-}
-
-interface Chat {
-  id: string;
-  friend: any;
-  messages: Message[];
-  lastMessage: Message;
-  unreadMessagesCount: number;
-}
 
 interface ChatState {
   chats: Chat[];

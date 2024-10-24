@@ -17,8 +17,9 @@ import {
   getPrivateKeyFromLocalStorage,
   getPublicKey,
 } from "@/lib/encryption";
+import { Chat, Message, SearchedFriend } from "@/types";
 
-const decryptChatMessages = async (chat: any) => {
+const decryptChatMessages = async (chat: Chat) => {
   if (!chat || !chat.messages?.length) return chat;
 
   const privateKey = await getPrivateKeyFromLocalStorage();
@@ -37,7 +38,7 @@ const decryptChatMessages = async (chat: any) => {
     const sharedKey = await deriveSharedKey(privateKey, publicKey);
 
     const decryptedMessages = await Promise.all(
-      chat.messages.map(async (message: any) => {
+      chat.messages.map(async (message: Message) => {
         if (message.content && message.iv) {
           try {
             const encryptedMessageBuffer = Buffer.from(
@@ -132,7 +133,7 @@ export default function FriendsList() {
 
   const myFriends = data?.friends;
 
-  const filteredFriends = myFriends?.filter((friend: any) =>
+  const filteredFriends = myFriends?.filter((friend: SearchedFriend) =>
     friend.fullName.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
@@ -171,7 +172,7 @@ export default function FriendsList() {
             </div>
           ) : (
             <div>
-              {filteredFriends?.map((friend: any) => (
+              {filteredFriends?.map((friend: SearchedFriend) => (
                 <div
                   key={friend?.id}
                   className={`flex flex-row items-center justify-between my-1 py-2 px-6 `}

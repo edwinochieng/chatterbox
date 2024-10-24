@@ -7,6 +7,7 @@ import axios from "axios";
 import FriendRequests from "./FriendRequests";
 import { useAuth } from "@/context/AuthContext";
 import UserSkeleton from "./UserSkeleton";
+import { SearchedUser } from "@/types";
 
 export default function AddFriends() {
   const [searchTerm, setSearchTerm] = useState("");
@@ -54,7 +55,7 @@ export default function AddFriends() {
       );
     },
     onSuccess: () => {
-      setSearchResult((prevResult: any) => ({
+      setSearchResult((prevResult: SearchedUser) => ({
         ...prevResult,
         isRequested: true,
       }));

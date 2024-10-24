@@ -11,15 +11,17 @@ import {
   getPublicKey,
 } from "@/lib/encryption";
 
+interface Props {
+  chatId: string;
+  friendId: string;
+  friendPublicKey: string;
+}
+
 export default function TextInput({
   chatId,
   friendId,
   friendPublicKey,
-}: {
-  chatId: string;
-  friendId: string;
-  friendPublicKey: string;
-}) {
+}: Props) {
   const [message, setMessage] = useState("");
   const { user } = useAuth();
   const senderId = user?.userId;

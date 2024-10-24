@@ -18,6 +18,14 @@ export const updateProfileSettings = async (req: Request, res: Response) => {
     const updatedUser = await prisma.user.update({
       where: { id: userId },
       data: updateData,
+      select: {
+        id: true,
+        fullName: true,
+        email: true,
+        imageUrl: true,
+        bio: true,
+        publicKey: true,
+      },
     });
 
     return res.status(200).json({
@@ -63,7 +71,16 @@ export const updateProfilePicture = async (req: Request, res: Response) => {
     const updatedUser = await prisma.user.update({
       where: { id: userId },
       data: { imageUrl: profilePictureUrl },
+      select: {
+        id: true,
+        fullName: true,
+        email: true,
+        imageUrl: true,
+        bio: true,
+        publicKey: true,
+      },
     });
+
     return res.status(200).json({
       user: updatedUser,
       message: "Profile picture updated successfully",
@@ -80,7 +97,16 @@ export const updatePublicKey = async (req: Request, res: Response) => {
     const updatedUser = await prisma.user.update({
       where: { id: userId },
       data: { publicKey: publicKey },
+      select: {
+        id: true,
+        fullName: true,
+        email: true,
+        imageUrl: true,
+        bio: true,
+        publicKey: true,
+      },
     });
+
     return res.status(200).json({
       user: updatedUser,
       message: "Public key updated successfully",
@@ -151,6 +177,14 @@ export const searchUserById = async (req: Request, res: Response) => {
     const user = await prisma.user.findUnique({
       where: {
         id: String(userId),
+      },
+      select: {
+        id: true,
+        fullName: true,
+        email: true,
+        imageUrl: true,
+        bio: true,
+        publicKey: true,
       },
     });
 

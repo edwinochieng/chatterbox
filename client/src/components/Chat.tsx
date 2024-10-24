@@ -2,12 +2,19 @@
 import React from "react";
 import { Avatar, AvatarImage } from "@/components/ui/avatar";
 import { formatDateForMessages } from "@/lib/dateHelper";
+import { Friend, Message } from "@/types";
+
+interface Props {
+  friend: Friend;
+  lastMessage: Message;
+  unreadMessagesCount: number;
+}
 
 export default function Chat({
   friend,
   lastMessage,
   unreadMessagesCount,
-}: any) {
+}: Props) {
   return (
     <div
       className={`w-full flex flex-row items-center my-3 px-6 py-3 cursor-pointer  `}
